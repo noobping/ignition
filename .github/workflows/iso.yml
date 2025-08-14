@@ -1,0 +1,213 @@
+name: iso
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [ x86_64, aarch64 ]
+
+    env:
+      FCOS_STREAM: stable
+      IGN_URL: https://ign.noobping.dev/fcos.ign
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq coreutils curl
+
+      - name: Make build dirs
+        run: |
+          mkdir -p out work
+
+      - name: Fetch destination Ignition (installed system)
+        run: |
+          curl -fsSL -o work/dest.ign "$IGN_URL"
+          jq -e . work/dest.ign >/dev/null
+
+      - name: Generate LIVE Ignition (autoinstall) with Butane
+        run: |
+          cat > work/live.bu <<'BUTANE'
+          variant: fcos
+          version: 1.5.0
+          storage:
+            files:
+              # Auto-install script
+              - path: /usr/local/bin/auto-install.sh
+                mode: 0755
+                contents:
+                  inline: |
+                    #!/usr/bin/env bash
+                    set -euo pipefail
+
+                    # Pick the "fastest and smallest empty" disk.
+                    # Heuristic:
+                    #   1) Must be a "disk", not removable/ROM/read-only.
+                    #   2) Must have no partitions and no filesystem signatures.
+                    #   3) Prefer NVMe > non-rotational SSD > rotational HDD.
+                    #   4) Among equals, choose the SMALLEST capacity (saves big disks).
+                    mapfile -t CANDIDATES < <(
+                      lsblk -dn -o NAME,TYPE,RO,RM | awk '$2=="disk" && $3==0 && $4==0 {print $1}'
+                    )
+
+                    choose_disk() {
+                      local best=""
+                      local best_score=999999
+                      for d in "${CANDIDATES[@]}"; do
+                        # skip ISO/CD (sr*) just in case
+                        [[ "$d" == sr* ]] && continue
+                        # skip if has partitions
+                        lsblk -n "/dev/$d" | awk 'NR>1 {exit 1}' || continue
+                        # skip if any fs sigs present
+                        if wipefs -n "/dev/$d" | grep -q .; then
+                          continue
+                        fi
+                        # gather attrs
+                        local rota tran size_bytes
+                        rota="$(cat "/sys/block/$d/queue/rotational" 2>/dev/null || echo 1)"
+                        tran="$(cat "/sys/block/$d/device/transport" 2>/dev/null || echo "")"
+                        size_bytes="$(blockdev --getsize64 "/dev/$d")"
+
+                        # score:
+                        #   NVMe gets score bonus, then SSD (rota=0), then HDD.
+                        #   Smaller size is preferred (tie-break).
+                        # lower score is better
+                        local speed_rank=3
+                        [[ "$tran" == "nvme" ]] && speed_rank=0
+                        [[ "$tran" != "nvme" && "$rota" == "0" ]] && speed_rank=1
+                        [[ "$rota" == "1" ]] && speed_rank=2
+
+                        # Composite score: speed weight + normalized size
+                        # We bias heavily toward speed, then size.
+                        local score=$(( speed_rank * 1000000000 + size_bytes / 1048576 ))
+                        if (( score < best_score )); then
+                          best_score=$score
+                          best="$d"
+                        fi
+                      done
+                      [[ -n "$best" ]] && echo "$best"
+                    }
+
+                    DISK="$(choose_disk || true)"
+                    if [[ -z "${DISK:-}" ]]; then
+                      echo "No suitable empty disk found" >&2
+                      sleep 5
+                      poweroff -f
+                    fi
+
+                    echo "Installing to /dev/${DISK} ..."
+                    # Run the installer. We use the baked-in destination Ignition.
+                    # coreos-installer will fetch the OS image; network-online is required.
+                    coreos-installer install \
+                      --ignition-file /opt/dest.ign \
+                      --copy-network \
+                      -y "/dev/${DISK}"
+
+                    # If install succeeds, reboot
+                    systemctl reboot -f
+              # Place the destination Ignition inside the live ISO so we don't need network to your IGN URL
+              - path: /opt/dest.ign
+                mode: 0644
+                contents:
+                  inline: "{}"   # placeholder; we will inject real JSON with jq later
+          systemd:
+            units:
+              - name: auto-install.service
+                enabled: true
+                contents: |
+                  [Unit]
+                  Description=FCOS Unattended Installer (auto-detect disk)
+                  After=network-online.target
+                  Wants=network-online.target
+
+                  [Service]
+                  Type=oneshot
+                  ExecStart=/usr/local/bin/auto-install.sh
+                  StandardOutput=journal+console
+                  StandardError=journal+console
+                  RemainAfterExit=no
+
+                  [Install]
+                  WantedBy=multi-user.target
+          BUTANE
+
+          # Use Butane container to convert to Ignition JSON
+          docker run --rm -i quay.io/coreos/butane:release < work/live.bu > work/live.ign
+
+          # Inject your *actual* dest Ignition JSON into /opt/dest.ign content
+          # (replace the placeholder "{}" added above)
+          jq --argfile dest work/dest.ign '
+            .storage.files |=
+              (map(
+                if .path == "/opt/dest.ign"
+                then . + { contents: { source: ("data:," + ($dest|tostring)) } }
+                else .
+                end
+              ))
+          ' work/live.ign > work/live.withdest.ign
+
+          jq -e . work/live.withdest.ign >/dev/null
+
+      - name: Download FCOS live ISO for ${{ matrix.arch }}
+        run: |
+          docker run --rm -v "$PWD:/data" -w /data \
+            quay.io/coreos/coreos-installer:release \
+            download -s "$FCOS_STREAM" -p metal -f iso -a "${{ matrix.arch }}"
+          ls -1 *.iso | tee "work/iso-${{ matrix.arch }}.txt"
+
+      - name: Customize ISO (embed LIVE Ignition that auto-installs)
+        run: |
+          ISO="$(cat work/iso-${{ matrix.arch }}.txt)"
+          OUT="fcos-${FCOS_STREAM}-${{ matrix.arch }}-autoinstall.iso"
+          docker run --rm -v "$PWD:/data" -w /data \
+            quay.io/coreos/coreos-installer:release \
+            iso customize \
+              --live-ignition work/live.withdest.ign \
+              -o "out/${OUT}" "$ISO"
+          (cd out && sha256sum "${OUT}" > "${OUT}.sha256")
+
+      - name: Upload artifacts (per-arch)
+        uses: actions/upload-artifact@v4
+        with:
+          name: fcos-${{ matrix.arch }}-iso
+          path: |
+            out/*.iso
+            out/*.sha256
+
+  release:
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: Prepare release tag
+        id: tag
+        run: |
+          DATE="$(date -u +'%Y%m%d')"
+          SHORT_SHA="${GITHUB_SHA::7}"
+          echo "tag=fcos-${DATE}-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: "FCOS auto-install ISOs — ${{ steps.tag.outputs.tag }}"
+          draft: false
+          prerelease: false
+          files: |
+            dist/**/**/*.iso
+            dist/**/**/*.sha256

@@ -1,4 +1,4 @@
-# Fedora CoreOS + Cockpit + Podman auto-update
+[![Build Ignition](https://github.com/noobping/ignition/actions/workflows/build-ignition.yml/badge.svg)](https://github.com/noobping/ignition/actions/workflows/build-ignition.yml)
 
 This repo builds an Ignition file (`fcos.ign`) from Butane and publishes it as a GitHub Pages artifact
 

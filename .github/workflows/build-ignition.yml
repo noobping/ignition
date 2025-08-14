@@ -1,0 +1,52 @@
+name: Build Ignition
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'butane/**'
+      - '.github/workflows/build-ignition.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate Ignition from Butane
+        run: |
+          docker run --rm -i \
+            -v "$PWD":/work -w /work \
+            quay.io/coreos/butane:release \
+            --files-dir . --strict < butane/fcos.bu > fcos.ign
+          ls -lh fcos.ign
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: files
+          path: |
+            fcos.ign
+            index.html
+
+  pages:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download built artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: files
+          path: dist
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4

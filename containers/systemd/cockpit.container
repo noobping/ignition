@@ -1,0 +1,15 @@
+[Unit]
+Description=Cockpit Web Console (containerized)
+
+[Container]
+Image=quay.io/cockpit/ws
+PublishPort=9090:9090
+Volume=/:/host
+Environment=COCKPIT_WEB_SERVER_SERVICES=0
+Label=io.containers.autoupdate=registry
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

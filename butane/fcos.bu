@@ -1,0 +1,61 @@
+variant: fcos
+version: 1.6.0
+
+passwd:
+  users:
+    - name: nick
+      groups: [ wheel ]
+
+storage:
+  files:
+    - path: /etc/ssh/sshd_config.d/10-hardening.conf
+      mode: 0644
+      contents:
+        inline: |
+          PasswordAuthentication no
+          ChallengeResponseAuthentication no
+          KbdInteractiveAuthentication no
+          PubkeyAuthentication yes
+          PermitRootLogin no
+          UseDNS no
+
+    - path: /usr/local/bin/fetch-keys.sh
+      mode: 0755
+      contents:
+        local: ./scripts/fetch-keys.sh
+
+    - path: /etc/systemd/system/authorized-keys.service
+      mode: 0644
+      contents:
+        local: ./systemd/system/authorized-keys.service
+
+    - path: /etc/containers/systemd/cockpit.container
+      mode: 0644
+      contents:
+        local: ./containers/systemd/cockpit.container
+    - path: /etc/systemd/system-preset/90-quadlet.preset
+      mode: 0644
+      contents:
+        local: ./systemd/system-preset/90-quadlet.preset
+
+    - path: /etc/systemd/system/cockpit-firewall.service
+      mode: 0644
+      contents:
+        local: ./systemd/system/cockpit-firewall.service
+    - path: /etc/systemd/system/set-timezone.service
+      mode: 0644
+      contents:
+        local: ./systemd/system/set-timezone.service
+
+systemd:
+  units:
+    - name: zincati.service
+      enabled: true
+    - name: podman-auto-update.timer
+      enabled: true
+    - name: cockpit-firewall.service
+      enabled: true
+    - name: set-timezone.service
+      enabled: true
+    - name: authorized-keys.service
+      enabled: true

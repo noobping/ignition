@@ -1,0 +1,99 @@
+{
+    "ignition": {
+        "version": "3.5.0"
+    },
+    "passwd": {
+        "users": [
+            {
+                "groups": [
+                    "wheel"
+                ],
+                "name": "nick"
+            }
+        ]
+    },
+    "storage": {
+        "files": [
+            {
+                "path": "/etc/ssh/sshd_config.d/10-hardening.conf",
+                "contents": {
+                    "compression": "",
+                    "source": "data:,PasswordAuthentication%20no%0AChallengeResponseAuthentication%20no%0AKbdInteractiveAuthentication%20no%0APubkeyAuthentication%20yes%0APermitRootLogin%20no%0AUseDNS%20no%0A"
+                },
+                "mode": 420
+            },
+            {
+                "path": "/usr/local/bin/fetch-keys.sh",
+                "contents": {
+                    "compression": "gzip",
+                    "source": "data:;base64,H4sIAAAAAAAC/3SOQUsDMRBG7/kVYyxUD7tThSoW6smCYkVY8eDFJbuZmpBuEjLZ1mr971LQi7WXubzhe+/4CHtO2FiP5FfQKDaCKUNBfYBoIy2UXYr72Uv9XM2n0uQceYLoQ2ii9W+lphU62pT5PUtx+/gwq2/uqqlEEzpCb1snRee0TVBEkIPfByyZjRRtn5ZQLPhpDnLw45CwBbV2MMRXZlOckD4fj8+utonVKX7GZH3+GsL13zFUfTYh2Q/StaMNS9GasPZQVLCrmOzOPwGmCxouR6ND6GIf7Zm+AwAA//92esfQQwEAAA=="
+                },
+                "mode": 493
+            },
+            {
+                "path": "/etc/systemd/system/authorized-keys.service",
+                "contents": {
+                    "compression": "gzip",
+                    "source": "data:;base64,H4sIAAAAAAAC/3TPT0rFQAzH8f2cYjxAOyeYhX+eKLgQ68NFKTJOUyd0mjySVF89vVRcCa5D+H5+/ZHQBncDmgVPhkzxFiwX33V3Pq1WWPALxtcZNvUTiyfMs5+EFy+wsIE/Pj24y8lAIoF9sswNU0WC1pK8g7mXRKb/3K6ZRtyjj8nK4YxqGi9C4QXC3gmtagl/FM71HcgHZhjc83aCyARa2NzhDLmzJBbDqhIq51TDG1KY9kHN/ttqca6/J7VU6/BDg/Fqi8taDZtVQX5l3wEAAP//MK0tpRcBAAA="
+                },
+                "mode": 420
+            },
+            {
+                "path": "/etc/containers/systemd/cockpit.container",
+                "contents": {
+                    "compression": "gzip",
+                    "source": "data:;base64,H4sIAAAAAAAC/zyOQUvDQBBG7/MretSDSa8t7KVrDkHBkmhzCKFMkiEd3OzE3dmW+OtFRS/fBw8evPbNs3bwSHEIvCiLN1aG94V101C/seKjONrcDeIV2VPgTxrvAVr7BzooZ5zIfCRcM5Z8+NXzW4Rj6h3Hy1GCmt12t91/D5zEpZlMvs8vEhUKf+Ugfiavxr7Yp2P5em6Kw7kuqlNR/Vxpi9ps4Rl7coYl+4+JGSaVtIyoZAJNHDWsAG1N4coDdVBRVAxq0N1wjQBt6aOicx006JXGw2rm5JQfUqSQKYaJFL4CAAD//9Ted9cUAQAA"
+                },
+                "mode": 420
+            },
+            {
+                "path": "/etc/systemd/system-preset/90-quadlet.preset",
+                "contents": {
+                    "compression": "",
+                    "source": "data:,enable%20cockpit.service"
+                },
+                "mode": 420
+            },
+            {
+                "path": "/etc/systemd/system/cockpit-firewall.service",
+                "contents": {
+                    "compression": "gzip",
+                    "source": "data:;base64,H4sIAAAAAAAC/6yQvU4DMRAGez/FVkllnDaFkfgrqCgCooiucOw9YsW3a63XFyLl4VEQAlHQUX/FfDPbF8o6mHtsUXLVzOSfKhKMWfAYSoHKorBerVcwssAdx0PNal4DafOEemQ5WKaSCa80yBuquRkV5Y/NbDcoc444mOdTRc+Ebc9qHt4xbjSIetebuF0mtwttDzbCMvI0BUpg5+9XNk4Jrl3C2VEvBRaL35O1FWUKhKRgbUjJXjT8RcNprHA+g0rH5f9zBQuH9AMw20dqGkoZPpthuj35qRfNtjeUrywfAQAA//+VEexGhQEAAA=="
+                },
+                "mode": 420
+            },
+            {
+                "path": "/etc/systemd/system/set-timezone.service",
+                "contents": {
+                    "compression": "gzip",
+                    "source": "data:;base64,H4sIAAAAAAAC/2TNsU3FMBQF0P5N4QU+nsBFECmoA6KIUhjnAhb2c/R8DYTpERKi+Qucsz5q5iZ36Mnywdw0LKBjrvhuCsfm5mHtgJ9qJ2yPVaYXwoKCn83ebxjtFRRZF9hHTtjk4TwQmqK/Ncr8hbQwGoMf3fxzVv+L75FILK6Dl//sapL1XjtjKZs8RSX22zPUUZgvo8P+6p8AAAD//3hIc2TDAAAA"
+                },
+                "mode": 420
+            }
+        ]
+    },
+    "systemd": {
+        "units": [
+            {
+                "enabled": true,
+                "name": "zincati.service"
+            },
+            {
+                "enabled": true,
+                "name": "podman-auto-update.timer"
+            },
+            {
+                "enabled": true,
+                "name": "cockpit-firewall.service"
+            },
+            {
+                "enabled": true,
+                "name": "set-timezone.service"
+            },
+            {
+                "enabled": true,
+                "name": "authorized-keys.service"
+            }
+        ]
+    }
+}

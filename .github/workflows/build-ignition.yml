@@ -4,7 +4,12 @@ on:
     branches: [ main ]
     paths:
       - 'butane/**'
+      - 'containers/**'
+      - 'systemd/**'
+      - 'presets/**'
+      - 'scripts/**'
       - '.github/workflows/build-ignition.yml'
+      - 'index.html'
   workflow_dispatch:
 
 jobs:

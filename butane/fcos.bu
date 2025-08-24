@@ -41,15 +41,15 @@ storage:
       contents:
         local: ./presets/90-quadlet.preset
 
-    - path: /etc/systemd/system/cockpit-firewall.service
+    - path: /etc/systemd/system/allow-cockpit.service
       mode: 0644
       contents:
-        local: ./services/cockpit-firewall.service
+        local: ./services/allow-cockpit.service
 
-    - path: /etc/systemd/system/ssh-firewall.service
+    - path: /etc/systemd/system/allow-ssh.service
       mode: 0644
       contents:
-        local: ./services/ssh-firewall.service
+        local: ./services/allow-ssh.service
 
     - path: /etc/systemd/system/set-timezone.service
       mode: 0644
@@ -66,9 +66,9 @@ systemd:
       enabled: true
     - name: podman-auto-update.timer
       enabled: true
-    - name: cockpit-firewall.service
+    - name: allow-cockpit.service
       enabled: true
-    - name: ssh-firewall.service
+    - name: allow-ssh.service
       enabled: true
     - name: set-timezone.service
       enabled: true

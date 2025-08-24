@@ -1,11 +1,11 @@
 [Unit]
-Description=Open port 9090 for Cockpit
+Description=Allow SSH in firewalld
 After=firewalld.service
 Requires=firewalld.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/firewall-cmd --permanent --add-port=9090/tcp
+ExecStart=/usr/bin/firewall-cmd --permanent --add-service=ssh
 ExecStart=/usr/bin/firewall-cmd --reload
 
 [Install]

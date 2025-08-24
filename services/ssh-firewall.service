@@ -1,0 +1,12 @@
+[Unit]
+Description=Open SSH in firewall
+After=firewalld.service
+Requires=firewalld.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/firewall-cmd --permanent --add-service=ssh
+ExecStart=/usr/bin/firewall-cmd --reload
+
+[Install]
+WantedBy=multi-user.target

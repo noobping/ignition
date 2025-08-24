@@ -56,17 +56,29 @@ storage:
       contents:
         local: ./services/set-timezone.service
 
+networkd:
+  units:
+    - name: 20-fcos.network
+      contents: |
+        [Match]
+        Name=*
+
+        [Network]
+        DHCP=yes
+
 systemd:
   units:
+    - name: firewalld.service
+      enabled: true
     - name: zincati.service
       enabled: true
-    - name: sshd.socket
+    - name: sshd.service
       enabled: true
     - name: podman-auto-update.timer
       enabled: true
     - name: cockpit-firewall.service
       enabled: true
-    - name: sshd-firewall.service
+    - name: ssh-firewall.service
       enabled: true
     - name: set-timezone.service
       enabled: true

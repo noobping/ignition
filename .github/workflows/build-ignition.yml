@@ -6,9 +6,9 @@ on:
     paths:
       - 'butane/**'
       - 'containers/**'
-      - 'systemd/**'
       - 'presets/**'
       - 'scripts/**'
+      - 'services/**'
       - '.github/workflows/build-ignition.yml'
       - 'index.html'
   workflow_dispatch:

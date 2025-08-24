@@ -64,6 +64,8 @@ systemd:
       enabled: true
     - name: sshd.service
       enabled: true
+    - name: cockpit.service
+      enabled: true
     - name: podman-auto-update.timer
       enabled: true
     - name: allow-cockpit.service

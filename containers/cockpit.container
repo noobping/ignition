@@ -1,12 +1,16 @@
 [Unit]
 Description=Cockpit Web Console (containerized)
+Wants=network-online.target
+After=network-online.target
 
 [Container]
-Image=quay.io/cockpit/ws
+Image=quay.io/cockpit/ws:latest
+ContainerName=cockpit-ws
 PublishPort=9090:9090
 Volume=/:/host
 Environment=COCKPIT_WEB_SERVER_SERVICES=0
 Label=io.containers.autoupdate=registry
+PodmanArgs=--privileged
 
 [Service]
 Restart=always

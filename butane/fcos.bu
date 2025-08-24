@@ -56,16 +56,6 @@ storage:
       contents:
         local: ./services/set-timezone.service
 
-networkd:
-  units:
-    - name: 20-fcos.network
-      contents: |
-        [Match]
-        Name=*
-
-        [Network]
-        DHCP=yes
-
 systemd:
   units:
     - name: firewalld.service

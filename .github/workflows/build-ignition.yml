@@ -79,7 +79,7 @@ jobs:
             iso customize \
               --live-ignition /work/fcos.ign \
               --dest-ignition /work/fcos.ign \
-              --pre-install /work/scripts/detect-device.sh
+              --pre-install /work/scripts/detect-device.sh \
               -o /work/fcos-${STREAM}-${ARCH}.iso \
               "/work/${ISO}"
 

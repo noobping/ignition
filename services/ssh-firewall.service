@@ -1,5 +1,5 @@
 [Unit]
-Description=Open SSH in firewall
+Description=Open SSH port in firewall
 After=firewalld.service
 Requires=firewalld.service
 

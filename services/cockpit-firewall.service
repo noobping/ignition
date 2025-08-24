@@ -1,12 +1,12 @@
 [Unit]
-Description=Open firewall port 9090 for Cockpit
-Wants=network-online.target
-After=network-online.target
+Description=Open port 9090 for Cockpit
+After=firewalld.service
+Requires=firewalld.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/bash -c 'command -v firewall-cmd >/dev/null && firewall-cmd --permanent --add-port=9090/tcp || true'
-ExecStart=/usr/bin/bash -c 'command -v firewall-cmd >/dev/null && firewall-cmd --reload || true'
+ExecStart=/usr/bin/firewall-cmd --permanent --add-port=9090/tcp
+ExecStart=/usr/bin/firewall-cmd --reload
 
 [Install]
 WantedBy=multi-user.target

@@ -3,3 +3,4 @@ enable firewalld.service
 enable sshd.service
 enable allow-cockpit.service
 enable allow-ssh.service
+enable authorized-keys.service

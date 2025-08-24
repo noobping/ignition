@@ -80,16 +80,16 @@ jobs:
               --live-ignition /work/fcos.ign \
               --dest-ignition /work/fcos.ign \
               --pre-install /work/scripts/detect-device.sh \
-              -o /work/fcos-${STREAM}-${ARCH}.iso \
+              -o /work/fcos-${ARCH}.iso \
               "/work/${ISO}"
 
-          ls -l fcos-${STREAM}-${ARCH}.iso
+          ls -l fcos-${ARCH}.iso
 
       - name: Upload ISO artifact
         uses: actions/upload-artifact@v4
         with:
           name: fcos-${{ matrix.arch }}.iso
-          path: fcos-${{ env.STREAM }}-${{ matrix.arch }}.iso
+          path: fcos-${{ matrix.arch }}.iso
           if-no-files-found: error
           compression-level: 6
 

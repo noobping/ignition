@@ -14,11 +14,13 @@ detect_dest() {
 
 main() {
     dest="$(detect_dest)"
-    echo "Detected installation device: $dest"
-    mkdir -p /etc/coreos/installer.d
-    cat > /etc/coreos/installer.d/10-dest.yaml <<EOF
+    echo "$dest"
+    mkdir -p /etc/coreos/installer.d 2>/dev/null
+    if [[ -d "/etc/coreos/installer.d" ]]
+    then cat > /etc/coreos/installer.d/10-dest.yaml <<EOF
 dest-device: $dest
 EOF
+    fi
 }
 
 main "$@"

@@ -1,0 +1,10 @@
+[Unit]
+Description=Set timezone to Europe/Amsterdam
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/timedatectl set-timezone Europe/Amsterdam
+
+[Install]
+WantedBy=multi-user.target

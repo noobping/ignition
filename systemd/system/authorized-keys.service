@@ -1,0 +1,12 @@
+[Unit]
+Description=Fetch SSH authorized_keys for nick from remote URL
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=!/home/nick/.ssh/authorized_keys
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/fetch-keys.sh
+
+[Install]
+WantedBy=multi-user.target

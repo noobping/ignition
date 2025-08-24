@@ -1,0 +1,120 @@
+name: Build Ignition
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'butane/**'
+      - 'containers/**'
+      - 'systemd/**'
+      - 'presets/**'
+      - 'scripts/**'
+      - '.github/workflows/build-ignition.yml'
+      - 'index.html'
+  workflow_dispatch:
+
+env:
+  STREAM: stable
+  BUTANE_IMAGE: quay.io/coreos/butane:release
+  INSTALLER_IMAGE: quay.io/coreos/coreos-installer:release
+
+jobs:
+  generate-ignition:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate Ignition from Butane
+        run: |
+          set -euo pipefail
+          docker run --rm -i \
+            -v "$PWD":/work -w /work \
+            "$BUTANE_IMAGE" \
+            --files-dir . --strict < butane/fcos.bu > fcos.ign
+          ls -lh fcos.ign
+
+      - name: Upload ignition + site files
+        uses: actions/upload-artifact@v4
+        with:
+          name: files
+          path: |
+            fcos.ign
+            index.html
+
+  build-iso:
+    needs: generate-ignition
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [ x86_64, aarch64 ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download ignition artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: files
+          path: .
+
+      - name: Download FCOS live ISO
+        run: |
+          set -euo pipefail
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD":/work -w /work "$INSTALLER_IMAGE" \
+            download -s "$STREAM" -a "${{ matrix.arch }}" -p metal -f iso -C /work --decompress
+
+      - name: Customize ISO with Ignition
+        run: |
+          set -euo pipefail
+          ARCH="${{ matrix.arch }}"
+          ISO=$(ls -1 fedora-coreos-*-live-iso.${ARCH}.iso | tail -n1)
+
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD":/work -w /work "$INSTALLER_IMAGE" \
+            iso customize \
+              --live-ignition /work/fcos.ign \
+              --dest-ignition /work/fcos.ign \
+              -o /work/fcos-${STREAM}-${ARCH}.iso \
+              "/work/${ISO}"
+
+          ls -l fcos-${STREAM}-${ARCH}.iso
+
+      - name: Upload ISO artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fcos-${{ matrix.arch }}.iso
+          path: fcos-${{ env.STREAM }}-${{ matrix.arch }}.iso
+          if-no-files-found: error
+          compression-level: 6
+
+  pages:
+    needs: generate-ignition
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download built artifact (ignition + site)
+        uses: actions/download-artifact@v4
+        with:
+          name: files
+          path: dist
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4

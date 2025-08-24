@@ -1,5 +1,5 @@
 [Unit]
-Description=Allow Cockpit in firewalld
+Description=Allow Cockpit (9090) in firewalld
 After=firewalld.service
 Requires=firewalld.service
 

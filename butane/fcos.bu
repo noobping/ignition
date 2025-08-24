@@ -46,10 +46,10 @@ storage:
       contents:
         local: ./services/cockpit-firewall.service
 
-    - path: /etc/systemd/system/sshd-firewall.service
+    - path: /etc/systemd/system/ssh-firewall.service
       mode: 0644
       contents:
-        local: ./services/sshd-firewall.service
+        local: ./services/ssh-firewall.service
 
     - path: /etc/systemd/system/set-timezone.service
       mode: 0644

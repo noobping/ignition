@@ -1,1 +1,2 @@
 enable cockpit.service
+enable sshd.service

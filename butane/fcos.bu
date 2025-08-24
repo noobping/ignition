@@ -5,6 +5,8 @@ passwd:
   users:
     - name: nick
       groups: [ wheel ]
+      ssh_authorized_keys:
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEjRfPMkXzhO4unF0mEOHge+wGAE9VarXYo7RRXX2L3j
 
 storage:
   files:

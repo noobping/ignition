@@ -1,3 +1,5 @@
 enable cockpit.service
 enable firewalld.service
 enable sshd.service
+enable allow-cockpit.service
+enable allow-ssh.service

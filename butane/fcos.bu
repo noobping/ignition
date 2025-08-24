@@ -60,6 +60,8 @@ systemd:
   units:
     - name: zincati.service
       enabled: true
+    - name: sshd.socket
+      enabled: true
     - name: podman-auto-update.timer
       enabled: true
     - name: cockpit-firewall.service

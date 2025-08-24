@@ -29,32 +29,32 @@ storage:
     - path: /etc/systemd/system/authorized-keys.service
       mode: 0644
       contents:
-        local: ./systemd/system/authorized-keys.service
+        local: ./services/authorized-keys.service
 
     - path: /etc/containers/systemd/cockpit.container
       mode: 0644
       contents:
-        local: ./containers/systemd/cockpit.container
+        local: ./containers/cockpit.container
 
     - path: /etc/systemd/system-preset/90-quadlet.preset
       mode: 0644
       contents:
-        local: ./systemd/system-preset/90-quadlet.preset
+        local: ./presets/90-quadlet.preset
 
     - path: /etc/systemd/system/cockpit-firewall.service
       mode: 0644
       contents:
-        local: ./systemd/system/cockpit-firewall.service
+        local: ./services/cockpit-firewall.service
 
     - path: /etc/systemd/system/sshd-firewall.service
       mode: 0644
       contents:
-        local: ./systemd/system/sshd-firewall.service
+        local: ./services/sshd-firewall.service
 
     - path: /etc/systemd/system/set-timezone.service
       mode: 0644
       contents:
-        local: ./systemd/system/set-timezone.service
+        local: ./services/set-timezone.service
 
 systemd:
   units:

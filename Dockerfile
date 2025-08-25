@@ -1,6 +1,10 @@
 FROM fedora:latest
-RUN dnf -y install dnsmasq nginx iproute which && dnf clean all
-RUN mkdir -p /pxe/http/fcos/{x86_64,aarch64} /pxe/tftp/pxelinux.cfg /pxe/tftp/EFI/{x86_64,aarch64} /var/cache/nginx /var/lib/dnsmasq
+RUN dnf -y install dnsmasq nginx iproute which shim-x64 shim-aa64 grub2-efi-x64 grub2-efi-aa64 && dnf clean all
+RUN mkdir -p /pxe/http/fcos/{x86_64,aarch64} /pxe/tftp/pxelinux.cfg /pxe/tftp/EFI/{BOOT,x86_64,aarch64} /var/cache/nginx /var/lib/dnsmasq
+RUN cp /usr/share/shim/shimx64.efi /pxe/tftp/EFI/BOOT/BOOTX64.EFI \
+ && cp /usr/share/shim/shimaa64.efi /pxe/tftp/EFI/BOOT/BOOTAA64.EFI \
+ && cp /usr/lib/grub/x86_64-efi/grubx64.efi /pxe/tftp/EFI/BOOT/grubx64.efi \
+ && cp /usr/lib/grub/arm64-efi/grubaa64.efi /pxe/tftp/EFI/BOOT/grubaa64.efi
 
 # x86_64
 COPY pxe-x86_64/*-initramfs.x86_64-with-ign.img /pxe/http/fcos/x86_64/initramfs.x86_64-with-ign.img

@@ -17,7 +17,7 @@ env:
   STREAM: stable
   BUTANE_IMAGE: quay.io/coreos/butane:release
   INSTALLER_IMAGE: quay.io/coreos/coreos-installer:release
-  IMAGE_NAME: ghcr.io/noobping/pxe
+  IMAGE_NAME: ghcr.io/noobping/pxe-boot
 
 jobs:
   generate-ignition:
@@ -158,6 +158,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Download PXE artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: files
+          path: .
+      
+      - run: tree
+        continue-on-error: true
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -181,14 +190,14 @@ jobs:
           labels: |
             org.opencontainers.image.source=${{ github.repositoryUrl }}
             org.opencontainers.image.description=PXE server for Fedora CoreOS (TFTP + HTTP)
-            org.opencontainers.image.title=pxe
+            org.opencontainers.image.title=pxe-boot
             org.opencontainers.image.licenses="MIT"
             io.containers.autoupdate="registry"
 
       - name: Build & Push (multi-arch)
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: ./containers/pxe-boot
           platforms: linux/amd64,linux/arm64
           push: true
           pull: true

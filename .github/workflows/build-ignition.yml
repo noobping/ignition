@@ -2,7 +2,11 @@ name: Build Ignition
 
 on:
   push:
-    branches: [main]
+    branches: 
+      - main
+      - master
+      - develop
+      - development
     paths:
       - "butane/**"
       - "containers/**"

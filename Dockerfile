@@ -1,9 +1,9 @@
 FROM fedora:latest
 RUN dnf -y install dnsmasq nginx iproute ipxe-bootimgs-x86 ipxe-bootimgs-aarch64 && dnf clean all
-RUN mkdir -p /pxe/fcos/{x86_64,aarch64} /pxe/EFI /var/cache/nginx /var/lib/dnsmasq
-RUN cp /usr/share/ipxe/ipxe-x86_64.efi /pxe/EFI/ipxe-x86_64.efi
-RUN cp /usr/share/ipxe/undionly.kpxe /pxe/EFI/undionly.kpxe
-RUN cp /usr/share/ipxe/arm64-efi/ipxe.efi /pxe/EFI/ipxe-aarch64.efi
+RUN mkdir -p /pxe/fcos/{x86_64,aarch64} /var/cache/nginx /var/lib/dnsmasq
+RUN cp /usr/share/ipxe/ipxe-x86_64.efi /pxe/ipxe-x86_64.efi
+RUN cp /usr/share/ipxe/undionly.kpxe /pxe/undionly.kpxe
+RUN cp /usr/share/ipxe/arm64-efi/ipxe.efi /pxe/ipxe-aarch64.efi
 
 # x86_64
 COPY pxe-x86_64/*-initramfs.x86_64-with-ign.img /pxe/fcos/initramfs-x86_64.img

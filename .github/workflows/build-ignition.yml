@@ -26,6 +26,23 @@ env:
   IMAGE_NAME: ghcr.io/noobping/pxeboot
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      site_or_ignition: ${{ steps.filter.outputs.site_or_ignition }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Filter changed paths
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            site_or_ignition:
+              - 'index.html'
+              - 'butane/**'
+
   generate-ignition:
     runs-on: ubuntu-latest
     steps:
@@ -216,7 +233,10 @@ jobs:
           cache-to: type=gha,mode=max
 
   build-iso:
-    needs: generate-ignition
+    needs: 
+      - generate-ignition
+      - changes
+    if: needs.changes.outputs.site_or_ignition == 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -267,7 +287,10 @@ jobs:
           compression-level: 6
 
   pages:
-    needs: generate-ignition
+    needs: 
+      - generate-ignition
+      - changes
+    if: needs.changes.outputs.site_or_ignition == 'true'
     runs-on: ubuntu-latest
     permissions:
       pages: write

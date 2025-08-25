@@ -236,7 +236,7 @@ jobs:
     needs: 
       - generate-ignition
       - changes
-    if: needs.changes.outputs.site_or_ignition == 'true'
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.site_or_ignition == 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -290,7 +290,7 @@ jobs:
     needs: 
       - generate-ignition
       - changes
-    if: needs.changes.outputs.site_or_ignition == 'true'
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.site_or_ignition == 'true'
     runs-on: ubuntu-latest
     permissions:
       pages: write

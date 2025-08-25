@@ -12,8 +12,8 @@ COPY fedora-*-kernel.aarch64                 /pxe/http/fcos/aarch64/kernel.aarch
 COPY fedora-*-rootfs.aarch64.img             /pxe/http/fcos/aarch64/rootfs.aarch64.img
 
 # Configuration
-COPY containers/pxe-boot/dnsmasq.conf /etc/dnsmasq.d/tftp.conf
-COPY containers/pxe-boot/nginx.conf /etc/nginx/nginx.conf
+COPY configs/dnsmasq.conf /etc/dnsmasq.d/tftp.conf
+COPY configs/nginx.conf /etc/nginx/nginx.conf
 RUN chown -R nginx:nginx /pxe /run/nginx /var/log/nginx /var/cache/nginx /var/lib/dnsmasq
 RUN setcap 'cap_net_bind_service=+ep' /usr/sbin/nginx && setcap 'cap_net_bind_service=+ep' /usr/sbin/dnsmasq
 

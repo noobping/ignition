@@ -18,6 +18,7 @@ COPY pxe-aarch64/*-rootfs.aarch64.img             /pxe/fcos/rootfs-aarch64.img
 COPY configs/fcos.ipxe /pxe/fcos.ipxe
 COPY configs/dnsmasq.conf /etc/dnsmasq.d/tftp.conf
 COPY configs/nginx.conf /etc/nginx/nginx.conf
+RUN printf '#!ipxe\ndhcp\nchain http://pxe.boot/fcos.ipxe\n' > /pxe/tftp/default.ipxe
 RUN chown -R nginx:nginx /pxe /var/cache/nginx /var/lib/dnsmasq
 RUN setcap 'cap_net_bind_service=+ep' /usr/sbin/nginx && setcap 'cap_net_bind_service=+ep' /usr/sbin/dnsmasq
 

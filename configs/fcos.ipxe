@@ -3,8 +3,8 @@ set pxe_http pxe.boot
 
 :menu
 menu FCOS Live
-item x86_64  FCOS x86_64 (live)
-item aarch64 FCOS aarch64 (live)
+item x86_64  FCOS x86_64
+item aarch64 FCOS aarch64
 choose target || goto menu
 goto ${target}
 

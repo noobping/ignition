@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: 
+    branches:
       - main
       - master
       - develop
@@ -193,7 +193,7 @@ jobs:
         with:
           pattern: pxe-*
           path: .
-      
+
       - name: Download ignition artifact
         uses: actions/download-artifact@v4
         with:
@@ -246,7 +246,7 @@ jobs:
           cache-to: type=gha,mode=max
 
   build-iso:
-    needs: 
+    needs:
       - generate-ignition
       - changes
     if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.site_or_ignition == 'true'
@@ -300,7 +300,7 @@ jobs:
           compression-level: 6
 
   pages:
-    needs: 
+    needs:
       - generate-ignition
       - changes
     if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.site_or_ignition == 'true'

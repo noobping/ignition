@@ -17,3 +17,9 @@ Pull the image:
 ```sh
 podman pull ghcr.io/noobping/pxe-boot:latest
 ```
+
+Run the image:
+
+```sh
+podman run --rm -p 80:80 -p 69:69/udp ghcr.io/noobping/pxe-boot:latest
+```

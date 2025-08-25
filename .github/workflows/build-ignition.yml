@@ -164,10 +164,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download PXE artifact
+      - name: Download PXE artifacts
         uses: actions/download-artifact@v4
         with:
-          name: files
+          pattern: pxe-*
           path: .
 
       - run: tree

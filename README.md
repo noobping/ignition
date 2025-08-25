@@ -15,11 +15,11 @@ podman run --rm -i -v "$PWD":"/pwd":Z -w /pwd quay.io/coreos/butane:release --us
 Pull the image:
 
 ```sh
-podman pull ghcr.io/noobping/pxe-boot:latest
+podman pull ghcr.io/noobping/pxeboot:latest
 ```
 
 Run the image:
 
 ```sh
-podman run --rm -p 80:80 -p 69:69/udp ghcr.io/noobping/pxe-boot:latest
+podman run --rm -p 80:80 -p 69:69/udp ghcr.io/noobping/pxeboot:latest
 ```

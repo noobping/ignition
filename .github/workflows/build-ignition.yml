@@ -23,7 +23,7 @@ env:
   STREAM: stable
   BUTANE_IMAGE: quay.io/coreos/butane:release
   INSTALLER_IMAGE: quay.io/coreos/coreos-installer:release
-  IMAGE_NAME: ghcr.io/noobping/pxe-boot
+  IMAGE_NAME: ghcr.io/noobping/pxeboot
 
 jobs:
   generate-ignition:
@@ -193,7 +193,7 @@ jobs:
           labels: |
             org.opencontainers.image.source=${{ github.repositoryUrl }}
             org.opencontainers.image.description=PXE server for Fedora CoreOS (TFTP + HTTP)
-            org.opencontainers.image.title=pxe-boot
+            org.opencontainers.image.title=pxeboot
             org.opencontainers.image.licenses="MIT"
             io.containers.autoupdate="registry"
 

@@ -8,6 +8,7 @@ on:
       - develop
       - development
     paths:
+      - "Dockerfile"
       - "butane/**"
       - "containers/**"
       - "presets/**"

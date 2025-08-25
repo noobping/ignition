@@ -106,21 +106,19 @@ jobs:
           echo "  initramfs: $INITRAMFS"
           echo "  rootfs:    $ROOTFS"
 
-          OUT_INITRAMFS="$(basename "$INITRAMFS" .img)-with-ign.img"
-
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD":/work -w /work "$INSTALLER_IMAGE" \
             pxe customize \
               --live-ignition /work/fcos.ign \
-              -o "/work/${OUT_INITRAMFS}" \
+              -o "/work/${INITRAMFS}" \
               "/work/$(basename "$INITRAMFS")"
 
           ARCH="$(echo "$ROOTFS" | sed -n 's/.*live-rootfs\.\(.*\)\.img/\1/p')"
           mkdir -p "pxe-${ARCH}"
           cp "$KERNEL" "pxe-${ARCH}/"
           cp "$ROOTFS" "pxe-${ARCH}/"
-          cp "$OUT_INITRAMFS" "pxe-${ARCH}/"
+          cp "$INITRAMFS" "pxe-${ARCH}/"
 
           echo "Staged PXE files:"
           ls -lh "pxe-${ARCH}"

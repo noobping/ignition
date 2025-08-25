@@ -21,6 +21,7 @@ COPY dnsmasq.conf.tmpl /etc/dnsmasq.conf.tmpl
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY html/ /usr/share/nginx/html/
 
+
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 80/tcp 69/udp

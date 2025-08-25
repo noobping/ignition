@@ -1,9 +1,4 @@
 #!/usr/bin/env bash
-
-# Normalize names for TFTP/HTTP simplicity
-# The download typically yields files with version in name; symlink to stable names
-for f in initramfs* rootfs* vmlinuz*; do
-[[ -f "$TARGET_DIR/$f" ]] || continue
 done
 # Symlink best-match
 ln -sf "$(ls -1 $TARGET_DIR/vmlinuz* | head -n1)" "$TARGET_DIR/vmlinuz"
@@ -11,12 +6,12 @@ ln -sf "$(ls -1 $TARGET_DIR/initramfs* | head -n1)" "$TARGET_DIR/initramfs.img"
 ln -sf "$(ls -1 $TARGET_DIR/*rootfs* | head -n1)" "$TARGET_DIR/rootfs.img"
 fi
 
-# Publish via HTTP
+# 2) Publish via HTTP
 install -D -m 0644 "$TARGET_DIR/rootfs.img" "$HTTP_ROOT/fcos/rootfs.img"
 install -D -m 0644 "$TARGET_DIR/initramfs.img" "$HTTP_ROOT/fcos/initramfs.img"
 install -D -m 0644 "$TARGET_DIR/vmlinuz" "$HTTP_ROOT/fcos/vmlinuz"
 
-# Prepare TFTP PXE directory. We'll use iPXE.
+# 3) Prepare TFTP PXE directory (iPXE script and/or grub configs). We'll use iPXE (chainloading recommended).
 mkdir -p "$TFTP_ROOT/ipxe"
 cat > "$TFTP_ROOT/ipxe/fcos.ipxe" <<'EOF'
 #!ipxe
@@ -26,7 +21,7 @@ initrd ${base-url}/initramfs.img
 boot
 EOF
 
-# Render dnsmasq config (TFTP-only; no DHCP lease handing).
+# 4) Render dnsmasq config (TFTP-only; no DHCP lease handing). Use proxy mode *if* you pass DNSMASQ_EXTRA accordingly.
 cat > /etc/dnsmasq.conf <<EOF
 # TFTP only; assumes an external DHCP server provides next-server/filename or you use ProxyDHCP.
 # If you want dnsmasq to offer ProxyDHCP, add to DNSMASQ_EXTRA: --dhcp-range=::,proxy -d --enable-tftp
@@ -44,10 +39,20 @@ pxe-service=X86PC,"iPXE",ipxe/fcos.ipxe
 ${DNSMASQ_EXTRA}
 EOF
 
-# Start services
+# 5) Generate an example ignition config URL note (no file served by default). Place any ignition at ${HTTP_ROOT}/ignition/host.ign
+mkdir -p "$HTTP_ROOT/ignition"
+cat > "$HTTP_ROOT/fcos/README.txt" <<EOF
+This server exposes Fedora CoreOS PXE artifacts under /fcos/ .
+Set kernel args to include your ignition config, e.g.:
+ignition.config.url=http://${HOSTNAME:-pxe}/ignition/host.ign
+Current KARGS: ${KARGS}
+EOF
+
+# 6) Start services
 nginx -g 'daemon off;' &
 NGINX_PID=$!
 
+# If capability CAP_NET_BIND_SERVICE/CAP_NET_RAW etc. are present, dnsmasq can bind. Use --keep-in-foreground.
 dnsmasq --no-daemon --conf-file=/etc/dnsmasq.conf &
 DNSMASQ_PID=$!
 

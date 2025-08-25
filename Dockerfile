@@ -1,5 +1,5 @@
 FROM fedora:latest
-RUN dnf -y install dnsmasq nginx iproute ipxe && dnf clean all
+RUN dnf -y install dnsmasq nginx iproute ipxe-bootimgs-x86 ipxe-bootimgs-aarch64 && dnf clean all
 RUN mkdir -p /pxe/fcos/{x86_64,aarch64} /pxe/EFI /var/cache/nginx /var/lib/dnsmasq
 RUN cp /usr/share/ipxe/ipxe-x86_64.efi /pxe/EFI/ipxe-x86_64.efi
 RUN cp /usr/share/ipxe/undionly.kpxe /pxe/EFI/undionly.kpxe

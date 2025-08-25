@@ -42,6 +42,72 @@ jobs:
             fcos.ign
             index.html
 
+    build-pxe:
+      needs: generate-ignition
+      runs-on: ubuntu-latest
+      strategy:
+        fail-fast: false
+        matrix:
+          arch: [ x86_64, aarch64 ]
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v4
+  
+        - name: Download ignition artifact
+          uses: actions/download-artifact@v4
+          with:
+            name: files
+            path: .
+  
+        - name: Download FCOS live PXE artifacts
+          env:
+            STREAM: ${{ env.STREAM }}
+            INSTALLER_IMAGE: ${{ env.INSTALLER_IMAGE }}
+          run: |
+            set -euo pipefail
+            docker run --rm \
+              --user "$(id -u):$(id -g)" \
+              -v "$PWD":/work -w /work "$INSTALLER_IMAGE" \
+              download -s "$STREAM" -a "${{ matrix.arch }}" -p metal -f pxe -C /work --decompress
+            ls -lh
+  
+        - name: Embed Ignition into initramfs
+          env:
+            INSTALLER_IMAGE: ${{ env.INSTALLER_IMAGE }}
+          run: |
+            set -euo pipefail
+            ARCH="${{ matrix.arch }}"
+            KERNEL=$(ls -1 fedora-coreos-*-live-kernel-${ARCH} | tail -n1)
+            INITRAMFS=$(ls -1 fedora-coreos-*-live-initramfs.${ARCH}.img | tail -n1)
+            ROOTFS=$(ls -1 fedora-coreos-*-live-rootfs.${ARCH}.img | tail -n1)
+  
+            echo "Found:"
+            echo "  kernel:    $KERNEL"
+            echo "  initramfs: $INITRAMFS"
+            echo "  rootfs:    $ROOTFS"
+  
+            docker run --rm \
+              --user "$(id -u):$(id -g)" \
+              -v "$PWD":/work -w /work "$INSTALLER_IMAGE" \
+              pxe customize \
+                --live-ignition /work/fcos.ign \
+                -o /work/${INITRAMFS%.img}-with-ign.${ARCH}.img \
+                "/work/${INITRAMFS}"
+  
+            mkdir -p "pxe-${ARCH}"
+            cp "$KERNEL" "pxe-${ARCH}/"
+            cp "${INITRAMFS%.img}-with-ign.${ARCH}.img" "pxe-${ARCH}/"
+            cp "$ROOTFS" "pxe-${ARCH}/"
+            ls -lh "pxe-${ARCH}"
+
+        - name: Upload PXE artifact
+          uses: actions/upload-artifact@v4
+          with:
+            name: pxe-${{ matrix.arch }}
+            path: pxe-${{ matrix.arch }}/*
+            if-no-files-found: error
+            compression-level: 6
+
   build-iso:
     needs: generate-ignition
     runs-on: ubuntu-latest

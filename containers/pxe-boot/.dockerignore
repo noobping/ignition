@@ -1,6 +1,0 @@
-files/*
-!files/vmlinuz
-!files/initramfs.img
-!files/rootfs.img
-!files/ipxe/
-!files/ipxe/*.ipxe

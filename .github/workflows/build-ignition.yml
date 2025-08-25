@@ -163,9 +163,6 @@ jobs:
         with:
           name: files
           path: .
-      
-      - run: tree
-        continue-on-error: true
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -197,7 +194,7 @@ jobs:
       - name: Build & Push (multi-arch)
         uses: docker/build-push-action@v6
         with:
-          context: ./containers/pxe-boot
+          context: .
           platforms: linux/amd64,linux/arm64
           push: true
           pull: true

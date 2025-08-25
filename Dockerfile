@@ -10,9 +10,9 @@ COPY pxe-x86_64/*-initramfs.x86_64-with-ign.img /pxe/fcos/initramfs-x86_64.img
 COPY pxe-x86_64/*-kernel.x86_64                 /pxe/fcos/kernel-x86_64
 COPY pxe-x86_64/*-rootfs.x86_64.img             /pxe/fcos/rootfs-x86_64.img
 # aarch64
-COPY pxe-aarch64/*-initramfs.aarch64-with-ign.img /pxe/fcos/initramfs.aarch64-with-ign.img
-COPY pxe-aarch64/*-kernel.aarch64                 /pxe/fcos/kernel.aarch64
-COPY pxe-aarch64/*-rootfs.aarch64.img             /pxe/fcos/rootfs.aarch64.img
+COPY pxe-aarch64/*-initramfs.aarch64-with-ign.img /pxe/fcos/initramfs-aarch64-with-ign.img
+COPY pxe-aarch64/*-kernel.aarch64                 /pxe/fcos/kernel-aarch64
+COPY pxe-aarch64/*-rootfs.aarch64.img             /pxe/fcos/rootfs-aarch64.img
 
 # Configuration
 COPY configs/fcos.ipxe /pxe/fcos.ipxe

@@ -1,9 +1,9 @@
 FROM fedora:latest
 RUN dnf -y install dnsmasq nginx iproute ipxe-bootimgs-x86 ipxe-bootimgs-aarch64 && dnf clean all
-RUN mkdir -p /pxe/fcos/{x86_64,aarch64} /var/cache/nginx /var/lib/dnsmasq
+RUN mkdir -p /pxe/fcos /var/cache/nginx /var/lib/dnsmasq
+RUN cp /usr/share/ipxe/arm64-efi/ipxe.efi /pxe/ipxe-aarch64.efi
 RUN cp /usr/share/ipxe/ipxe-x86_64.efi /pxe/ipxe-x86_64.efi
 RUN cp /usr/share/ipxe/undionly.kpxe /pxe/undionly.kpxe
-RUN cp /usr/share/ipxe/arm64-efi/ipxe.efi /pxe/ipxe-aarch64.efi
 
 # x86_64
 COPY pxe-x86_64/*-initramfs.x86_64-with-ign.img /pxe/fcos/initramfs-x86_64.img
@@ -15,10 +15,10 @@ COPY pxe-aarch64/*-kernel.aarch64                 /pxe/fcos/kernel-aarch64
 COPY pxe-aarch64/*-rootfs.aarch64.img             /pxe/fcos/rootfs-aarch64.img
 
 # Configuration
-COPY configs/fcos.ipxe /pxe/fcos.ipxe
+COPY configs/default.ipxe /pxe/tftp/default.ipxe
 COPY configs/dnsmasq.conf /etc/dnsmasq.d/tftp.conf
+COPY configs/fcos.ipxe /pxe/fcos.ipxe
 COPY configs/nginx.conf /etc/nginx/nginx.conf
-RUN printf '#!ipxe\ndhcp\nchain http://pxe.boot/fcos.ipxe\n' > /pxe/tftp/default.ipxe
 RUN chown -R nginx:nginx /pxe /var/cache/nginx /var/lib/dnsmasq
 RUN setcap 'cap_net_bind_service=+ep' /usr/sbin/nginx && setcap 'cap_net_bind_service=+ep' /usr/sbin/dnsmasq
 

@@ -1,5 +1,5 @@
 FROM fedora:latest
-RUN dnf -y install dnsmasq nginx iproute which shim-x64 shim-aa64 grub2-efi-x64 grub2-efi-aa64 && dnf clean all
+RUN dnf -y install dnsmasq nginx iproute which shim grub2 && dnf clean all
 RUN mkdir -p /pxe/fcos/{x86_64,aarch64} /pxe/pxelinux.cfg /pxe/EFI/{BOOT,x86_64,aarch64} /var/cache/nginx /var/lib/dnsmasq
 RUN cp /usr/share/shim/shimx64.efi /pxe/EFI/BOOT/BOOTX64.EFI \
  && cp /usr/share/shim/shimaa64.efi /pxe/EFI/BOOT/BOOTAA64.EFI \

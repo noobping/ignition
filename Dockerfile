@@ -17,12 +17,9 @@ COPY containers/pxe-boot/nginx.conf /etc/nginx/nginx.conf
 RUN chown -R nginx:nginx /pxe /run/nginx /var/log/nginx /var/cache/nginx /var/lib/dnsmasq
 RUN setcap 'cap_net_bind_service=+ep' /usr/sbin/nginx && setcap 'cap_net_bind_service=+ep' /usr/sbin/dnsmasq
 
-COPY containers/pxe-boot/entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
 USER nginx
 WORKDIR /pxe
 
 EXPOSE 80/tcp 69/udp
 HEALTHCHECK --interval=30s --timeout=3s --retries=3 CMD bash -c 'ss -lun | grep -q ":69 " && ss -ltn | grep -q ":80 "'
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+ENTRYPOINT ["/bin/bash", "-c", "nginx -g 'daemon off;' & exec dnsmasq -k --enable-tftp --tftp-root=/pxe/tftp --port=0"]

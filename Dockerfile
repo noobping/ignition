@@ -12,6 +12,7 @@ COPY pxe-aarch64/*-kernel.aarch64                 /pxe/http/fcos/aarch64/kernel.
 COPY pxe-aarch64/*-rootfs.aarch64.img             /pxe/http/fcos/aarch64/rootfs.aarch64.img
 
 # Configuration
+COPY configs/fcos.ipxe /pxe/http/fcos.ipxe
 COPY configs/pxelinux.cfg /pxe/tftp/pxelinux.cfg/default
 COPY configs/dnsmasq.conf /etc/dnsmasq.d/tftp.conf
 COPY configs/nginx.conf /etc/nginx/nginx.conf

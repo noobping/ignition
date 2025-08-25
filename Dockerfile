@@ -1,6 +1,6 @@
 FROM fedora:latest
 RUN dnf -y install dnsmasq nginx iproute which && dnf clean all
-RUN mkdir -p /pxe/http/fcos/{x86_64,aarch64} /pxe/tftp/pxelinux.cfg /pxe/tftp/EFI/{x86_64,aarch64} /var/cache/nginx /var/lib/dnsmasq
+RUN mkdir -p /pxe/http/ign /pxe/http/fcos/{x86_64,aarch64} /pxe/tftp/pxelinux.cfg /pxe/tftp/EFI/{x86_64,aarch64} /var/cache/nginx /var/lib/dnsmasq
 
 # x86_64
 COPY pxe-x86_64/*-initramfs.x86_64-with-ign.img /pxe/http/fcos/x86_64/initramfs.x86_64-with-ign.img

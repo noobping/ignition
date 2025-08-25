@@ -1,0 +1,23 @@
+#!ipxe
+set pxe_http pxe.boot
+
+:menu
+menu FCOS Live
+item x86_64  FCOS x86_64
+item aarch64 FCOS aarch64
+choose target || goto menu
+goto ${target}
+
+:x86_64
+kernel http://${pxe_http}/fcos/kernel-x86_64 \
+    ignition.firstboot ignition.platform.id=metal \
+    coreos.live.rootfs_url=http://${pxe_http}/fcos/rootfs-x86_64.img
+initrd http://${pxe_http}/fcos/initramfs-x86_64.img
+boot
+
+:aarch64
+kernel http://${pxe_http}/fcos/kernel-aarch64 \
+    ignition.firstboot ignition.platform.id=metal \
+    coreos.live.rootfs_url=http://${pxe_http}/fcos/rootfs-aarch64.img
+initrd http://${pxe_http}/fcos/initramfs-aarch64.img
+boot

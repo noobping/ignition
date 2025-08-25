@@ -1,24 +1,55 @@
 name: Build Ignition
 
+concurrency:
+  group: build-ignition-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
-    branches: [ main ]
+    branches: 
+      - main
+      - master
+      - develop
+      - development
     paths:
-      - 'butane/**'
-      - 'containers/**'
-      - 'presets/**'
-      - 'scripts/**'
-      - 'services/**'
-      - '.github/workflows/build-ignition.yml'
-      - 'index.html'
+      - "Dockerfile"
+      - "butane/**"
+      - "configs/**"
+      - "containers/**"
+      - "presets/**"
+      - "scripts/**"
+      - "services/**"
+      - ".github/workflows/build-ignition.yml"
+      - "index.html"
   workflow_dispatch:
 
 env:
   STREAM: stable
   BUTANE_IMAGE: quay.io/coreos/butane:release
   INSTALLER_IMAGE: quay.io/coreos/coreos-installer:release
+  IMAGE_NAME: ghcr.io/noobping/pxeboot
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      site_or_ignition: ${{ steps.filter.outputs.site_or_ignition }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Filter changed paths
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            site_or_ignition:
+              - 'index.html'
+              - 'butane/**'
+              - "services/**"
+              - "presets/**"
+              - "containers/**"
+
   generate-ignition:
     runs-on: ubuntu-latest
     steps:
@@ -42,13 +73,188 @@ jobs:
             fcos.ign
             index.html
 
-  build-iso:
+  build-pxe:
     needs: generate-ignition
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x86_64, aarch64]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download ignition artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: files
+          path: .
+
+      - name: Download FCOS live PXE artifacts
+        env:
+          STREAM: ${{ env.STREAM }}
+          INSTALLER_IMAGE: ${{ env.INSTALLER_IMAGE }}
+        run: |
+          set -euo pipefail
+          docker run --rm \
+              --user "$(id -u):$(id -g)" \
+              -v "$PWD":/work -w /work "$INSTALLER_IMAGE" \
+              download -s "$STREAM" -a "${{ matrix.arch }}" -p metal -f pxe -C /work --decompress
+          ls -lh
+
+      - name: Embed Ignition into initramfs
+        env:
+          INSTALLER_IMAGE: ${{ env.INSTALLER_IMAGE }}
+        run: |
+          set -euo pipefail
+
+          echo "Downloaded files:"
+          ls -lh
+
+          KERNEL="$(find . -maxdepth 1 -type f \( -name 'fedora-coreos-*-live-kernel.*' -o -name 'fedora-coreos-*-live-kernel*' \) | head -n1)"
+          INITRAMFS="$(find . -maxdepth 1 -type f -name 'fedora-coreos-*-live-initramfs.*.img' | head -n1)"
+          ROOTFS="$(find . -maxdepth 1 -type f -name 'fedora-coreos-*-live-rootfs.*.img' | head -n1)"
+
+          if [ -z "${KERNEL}" ] || [ -z "${INITRAMFS}" ] || [ -z "${ROOTFS}" ]; then
+            echo "ERROR: Could not locate one or more PXE files."
+            echo "Kernel:    ${KERNEL:-<missing>}"
+            echo "Initramfs: ${INITRAMFS:-<missing>}"
+            echo "Rootfs:    ${ROOTFS:-<missing>}"
+            exit 1
+          fi
+
+          echo "Found:"
+          echo "  kernel:    $KERNEL"
+          echo "  initramfs: $INITRAMFS"
+          echo "  rootfs:    $ROOTFS"
+
+          OUT_INITRAMFS="$(basename "$INITRAMFS" .img)-with-ign.img"
+
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD":/work -w /work "$INSTALLER_IMAGE" \
+            pxe customize \
+              --live-ignition /work/fcos.ign \
+              -o "/work/${OUT_INITRAMFS}" \
+              "/work/$(basename "$INITRAMFS")"
+
+          ARCH="$(echo "$ROOTFS" | sed -n 's/.*live-rootfs\.\(.*\)\.img/\1/p')"
+          mkdir -p "pxe-${ARCH}"
+          cp "$KERNEL" "pxe-${ARCH}/"
+          cp "$ROOTFS" "pxe-${ARCH}/"
+          cp "$OUT_INITRAMFS" "pxe-${ARCH}/"
+
+          echo "Staged PXE files:"
+          ls -lh "pxe-${ARCH}"
+
+      - name: Generate checksums
+        run: |
+          (cd pxe-${{ matrix.arch }} && sha256sum * > SHA256SUMS)
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3.6.0
+
+      - name: Cosign sign PXE blobs
+        env:
+          COSIGN_EXPERIMENTAL: "true"
+        run: |
+          for f in pxe-${{ matrix.arch }}/*; do
+            cosign sign-blob --yes "$f" --output-signature "$f.sig"
+          done
+
+      - name: Upload PXE artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: pxe-${{ matrix.arch }}
+          path: |
+            pxe-${{ matrix.arch }}/*
+            pxe-${{ matrix.arch }}/*.sig
+            pxe-${{ matrix.arch }}/SHA256SUMS
+          if-no-files-found: error
+          compression-level: 6
+
+  boot-container:
+    name: Build & Publish FCOS PXE Container
+    needs: build-pxe
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download PXE artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: pxe-*
+          path: .
+      
+      - name: Download ignition artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: files
+          path: .
+
+      - run: tree
+        continue-on-error: true
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest
+          labels: |
+            org.opencontainers.image.source=${{ github.repositoryUrl }}
+            org.opencontainers.image.description=PXE server for Fedora CoreOS (TFTP + HTTP)
+            org.opencontainers.image.title=pxeboot
+            org.opencontainers.image.licenses="MIT"
+            io.containers.autoupdate="registry"
+
+      - name: Build & Push (multi-arch)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          pull: true
+          build-args: |
+            UID=1000
+            GID=1000
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-iso:
+    needs: 
+      - generate-ignition
+      - changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.site_or_ignition == 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        arch: [ x86_64, aarch64 ]
+        arch: [x86_64, aarch64]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -94,7 +300,10 @@ jobs:
           compression-level: 6
 
   pages:
-    needs: generate-ignition
+    needs: 
+      - generate-ignition
+      - changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.site_or_ignition == 'true'
     runs-on: ubuntu-latest
     permissions:
       pages: write

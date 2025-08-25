@@ -76,28 +76,44 @@ jobs:
           INSTALLER_IMAGE: ${{ env.INSTALLER_IMAGE }}
         run: |
           set -euo pipefail
-          ARCH="${{ matrix.arch }}"
-          KERNEL=$(ls -1 fedora-coreos-*-live-kernel-${ARCH} | tail -n1)
-          INITRAMFS=$(ls -1 fedora-coreos-*-live-initramfs.${ARCH}.img | tail -n1)
-          ROOTFS=$(ls -1 fedora-coreos-*-live-rootfs.${ARCH}.img | tail -n1)
+
+          echo "Downloaded files:"
+          ls -lh
+
+          KERNEL="$(find . -maxdepth 1 -type f -name 'fedora-coreos-*-live-kernel-*' | head -n1)"
+          INITRAMFS="$(find . -maxdepth 1 -type f -name 'fedora-coreos-*-live-initramfs.*.img' | head -n1)"
+          ROOTFS="$(find . -maxdepth 1 -type f -name 'fedora-coreos-*-live-rootfs.*.img' | head -n1)"
+
+          if [ -z "$KERNEL" ] || [ -z "$INITRAMFS" ] || [ -z "$ROOTFS" ]; then
+            echo "ERROR: Could not locate one or more PXE files."
+            echo "Kernel:    ${KERNEL:-<missing>}"
+            echo "Initramfs: ${INITRAMFS:-<missing>}"
+            echo "Rootfs:    ${ROOTFS:-<missing>}"
+            exit 1
+          fi
 
           echo "Found:"
           echo "  kernel:    $KERNEL"
           echo "  initramfs: $INITRAMFS"
           echo "  rootfs:    $ROOTFS"
 
-          docker run --rm \
-              --user "$(id -u):$(id -g)" \
-              -v "$PWD":/work -w /work "$INSTALLER_IMAGE" \
-              pxe customize \
-              --live-ignition /work/fcos.ign \
-              -o /work/${INITRAMFS%.img}-with-ign.${ARCH}.img \
-              "/work/${INITRAMFS}"
+          OUT_INITRAMFS="$(basename "$INITRAMFS" .img)-with-ign.img"
 
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD":/work -w /work "$INSTALLER_IMAGE" \
+            pxe customize \
+              --live-ignition /work/fcos.ign \
+              -o "/work/${OUT_INITRAMFS}" \
+              "/work/$(basename "$INITRAMFS")"
+
+          ARCH="$(echo "$ROOTFS" | sed -n 's/.*live-rootfs\.\(.*\)\.img/\1/p')"
           mkdir -p "pxe-${ARCH}"
           cp "$KERNEL" "pxe-${ARCH}/"
-          cp "${INITRAMFS%.img}-with-ign.${ARCH}.img" "pxe-${ARCH}/"
           cp "$ROOTFS" "pxe-${ARCH}/"
+          cp "$OUT_INITRAMFS" "pxe-${ARCH}/"
+
+          echo "Staged PXE files:"
           ls -lh "pxe-${ARCH}"
 
       - name: Upload PXE artifact

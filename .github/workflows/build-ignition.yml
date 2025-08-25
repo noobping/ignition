@@ -80,11 +80,11 @@ jobs:
           echo "Downloaded files:"
           ls -lh
 
-          KERNEL="$(find . -maxdepth 1 -type f -name 'fedora-coreos-*-live-kernel-*' | head -n1)"
+          KERNEL="$(find . -maxdepth 1 -type f \( -name 'fedora-coreos-*-live-kernel.*' -o -name 'fedora-coreos-*-live-kernel*' \) | head -n1)"
           INITRAMFS="$(find . -maxdepth 1 -type f -name 'fedora-coreos-*-live-initramfs.*.img' | head -n1)"
           ROOTFS="$(find . -maxdepth 1 -type f -name 'fedora-coreos-*-live-rootfs.*.img' | head -n1)"
 
-          if [ -z "$KERNEL" ] || [ -z "$INITRAMFS" ] || [ -z "$ROOTFS" ]; then
+          if [ -z "${KERNEL}" ] || [ -z "${INITRAMFS}" ] || [ -z "${ROOTFS}" ]; then
             echo "ERROR: Could not locate one or more PXE files."
             echo "Kernel:    ${KERNEL:-<missing>}"
             echo "Initramfs: ${INITRAMFS:-<missing>}"

@@ -23,12 +23,6 @@ COPY html/ /usr/share/nginx/html/
 
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-LABEL org.opencontainers.image.title="pxe" \
-    org.opencontainers.image.description="PXE server for Fedora CoreOS (TFTP + HTTP)" \
-    org.opencontainers.image.source="https://github.com/noobping/ignition" \
-    org.opencontainers.image.licenses="MIT" \
-    io.containers.autoupdate="registry"
-
 EXPOSE 80/tcp 69/udp
 
 VOLUME ["/srv/fcos", "/usr/share/nginx/html", "/var/lib/tftpboot"]

@@ -119,6 +119,10 @@ jobs:
           echo "Staged PXE files:"
           ls -lh "pxe-${ARCH}"
 
+      - name: Generate checksums
+        run: |
+          (cd pxe-${{ matrix.arch }} && sha256sum * > SHA256SUMS)
+
       - name: Install cosign
         uses: sigstore/cosign-installer@v3.6.0
 
@@ -137,6 +141,7 @@ jobs:
           path: |
             pxe-${{ matrix.arch }}/*
             pxe-${{ matrix.arch }}/*.sig
+            pxe-${{ matrix.arch }}/SHA256SUMS
           if-no-files-found: error
           compression-level: 6
 

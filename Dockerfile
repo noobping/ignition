@@ -3,13 +3,13 @@ RUN dnf -y install dnsmasq nginx iproute which && dnf clean all
 RUN mkdir -p /pxe/http/fcos/{x86_64,aarch64} /pxe/tftp/EFI/{x86_64,aarch64} /run/nginx /var/log/nginx /var/cache/nginx /var/lib/dnsmasq
 
 # x86_64
-COPY *-initramfs.x86_64-with-ign.img /pxe/http/fcos/x86_64/initramfs.x86_64-with-ign.img
-COPY *-kernel.x86_64                 /pxe/http/fcos/x86_64/kernel.x86_64
-COPY *-rootfs.x86_64.img             /pxe/http/fcos/x86_64/rootfs.x86_64.img
+COPY pxe-x86_64/*-initramfs.x86_64-with-ign.img /pxe/http/fcos/x86_64/initramfs.x86_64-with-ign.img
+COPY pxe-x86_64/*-kernel.x86_64                 /pxe/http/fcos/x86_64/kernel.x86_64
+COPY pxe-x86_64/*-rootfs.x86_64.img             /pxe/http/fcos/x86_64/rootfs.x86_64.img
 # aarch64
-COPY *-initramfs.aarch64-with-ign.img /pxe/http/fcos/aarch64/initramfs.aarch64-with-ign.img
-COPY *-kernel.aarch64                 /pxe/http/fcos/aarch64/kernel.aarch64
-COPY *-rootfs.aarch64.img             /pxe/http/fcos/aarch64/rootfs.aarch64.img
+COPY pxe-aarch64/*-initramfs.aarch64-with-ign.img /pxe/http/fcos/aarch64/initramfs.aarch64-with-ign.img
+COPY pxe-aarch64/*-kernel.aarch64                 /pxe/http/fcos/aarch64/kernel.aarch64
+COPY pxe-aarch64/*-rootfs.aarch64.img             /pxe/http/fcos/aarch64/rootfs.aarch64.img
 
 # Configuration
 COPY configs/dnsmasq.conf /etc/dnsmasq.d/tftp.conf

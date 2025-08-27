@@ -1,5 +1,5 @@
 #!ipxe
-set pxe_http pxe.boot
+set pxe_http net.boot
 
 :menu
 menu FCOS Live

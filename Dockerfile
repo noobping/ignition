@@ -5,7 +5,8 @@ RUN cp /usr/share/ipxe/arm64-efi/snponly.efi /pxe/arm.efi
 RUN cp /usr/share/ipxe/ipxe-snponly-x86_64.efi /pxe/amd.efi
 
 # Ignition file
-COPY fcos.ign /pxe/fcos/ign.json
+COPY fcos.ign /pxe/ign.json
+COPY ks.cfg /pxe/ks.cfg
 # x86_64
 COPY pxe-x86_64/*-initramfs.x86_64-with-ign.img /pxe/fcos/initramfs-x86_64.img
 COPY pxe-x86_64/*-kernel.x86_64                 /pxe/fcos/kernel-x86_64
@@ -16,7 +17,7 @@ COPY pxe-aarch64/*-kernel.aarch64                 /pxe/fcos/kernel-aarch64
 COPY pxe-aarch64/*-rootfs.aarch64.img             /pxe/fcos/rootfs-aarch64.img
 
 # Configuration
-COPY configs/default.ipxe /pxe/tftp/default.ipxe
+COPY configs/default.ipxe /pxe/default.ipxe
 COPY configs/dnsmasq.conf /etc/dnsmasq.d/tftp.conf
 COPY configs/fcos.ipxe /pxe/fcos.ipxe
 COPY configs/nginx.conf /etc/nginx/nginx.conf
@@ -28,4 +29,4 @@ WORKDIR /pxe
 
 EXPOSE 80/tcp 69/udp
 HEALTHCHECK --interval=30s --timeout=3s --retries=3 CMD bash -c 'ss -lun | grep -q ":69 " && ss -ltn | grep -q ":80 "'
-ENTRYPOINT ["/bin/bash", "-c", "nginx -g 'daemon off;' & exec dnsmasq -k --enable-tftp --tftp-root=/pxe/tftp --port=0"]
+ENTRYPOINT ["/bin/bash", "-c", "nginx -g 'daemon off;' & exec dnsmasq -k --enable-tftp --tftp-root=/pxe --port=0"]

@@ -1,19 +1,13 @@
-[Unit]
-Description=Cockpit Web Console (containerized)
-Wants=network-online.target
-After=network-online.target
-
 [Container]
 Image=quay.io/cockpit/ws:latest
-ContainerName=cockpit-ws
-PublishPort=9090:9090
+ContainerName=cockpit
+Network=host
+Volume=/var/run/dbus:/var/run/dbus
 Volume=/:/host
-Environment=COCKPIT_WEB_SERVER_SERVICES=0
-Label=io.containers.autoupdate=registry
-PodmanArgs=--privileged
-
-[Service]
+Environment=COCKPIT_PORT=9090
+User=0
 Restart=always
+AutoUpdate=registry
 
 [Install]
 WantedBy=multi-user.target

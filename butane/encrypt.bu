@@ -1,0 +1,89 @@
+variant: fcos
+version: 1.6.0
+
+# (Optional) SSH access
+passwd:
+  users:
+    - name: core
+      ssh_authorized_keys:
+        - ssh-ed25519 AAAA...REPLACE_WITH_YOUR_KEY
+
+storage:
+  # Grow the root partition to consume the disk (safe on first boot)
+  disks:
+    - device: /dev/disk/by-id/coreos-boot-disk
+      partitions:
+        - label: root
+          number: 4
+          size_mib: 0        # 0 = use all remaining space
+          resize: true
+
+  # Create a TPM2-pinned LUKS container for the *root* partition
+  luks:
+    - name: root
+      label: luks-root
+      device: /dev/disk/by-partlabel/root
+      clevis:
+        tpm2: true
+        # If you want to bind to PCR7 (Secure Boot cert) instead of defaults,
+        # comment the 'tpm2: true' line above and use this block instead:
+        # custom:
+        #   needs_network: false
+        #   pin: tpm2
+        #   config: '{"pcr_bank":"sha1","pcr_ids":"7"}'
+      wipe_volume: true
+
+  # Format the unlocked mapper device as Btrfs for /sysroot (the OS root)
+  filesystems:
+    - device: /dev/mapper/root
+      format: btrfs
+      label: root
+      wipe_filesystem: true
+      # No 'path' here — FCOS recognizes this as the real rootfs
+
+systemd:
+  units:
+    # First boot only: prompt once to set a manual passphrase fallback
+    - name: add-root-passphrase.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Add LUKS fallback passphrase for root (first boot)
+        ConditionFirstBoot=yes
+        After=basic.target
+        DefaultDependencies=yes
+
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/local/sbin/add-root-passphrase
+
+        [Install]
+        WantedBy=multi-user.target
+
+files:
+  - path: /usr/local/sbin/add-root-passphrase
+    mode: 0700
+    contents:
+      inline: |
+        #!/usr/bin/bash
+        set -euo pipefail
+        DEV=/dev/disk/by-partlabel/root
+
+        # Ensure TPM2 Clevis pin exists (added at first boot by FCOS when encrypting root)
+        if ! clevis luks list -d "$DEV" 2>/dev/null | grep -q tpm2; then
+          echo "No TPM2 Clevis token found on $DEV; skipping fallback passphrase setup." >&2
+          exit 0
+        fi
+
+        PASS1=$(systemd-ask-password "Enter NEW LUKS fallback passphrase for root:")
+        PASS2=$(systemd-ask-password "Confirm NEW LUKS fallback passphrase for root:")
+        if [ "$PASS1" != "$PASS2" ]; then
+          echo "Passphrases did not match." >&2
+          exit 1
+        fi
+
+        # Add a new keyslot using the Clevis token for authorization (no existing passphrase needed)
+        # cryptsetup supports using a LUKS2 token to authorize luksAddKey. 
+        printf '%s' "$PASS1" | cryptsetup luksAddKey --token-only --token-type clevis "$DEV" -
+        unset PASS1 PASS2
+        echo "Added LUKS fallback passphrase. Done."

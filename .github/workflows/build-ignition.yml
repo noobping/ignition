@@ -9,52 +9,66 @@ on:
     branches:
       - main
       - master
-      - develop
-      - development
-    paths:
-      - "Dockerfile"
-      - "butane/**"
-      - "configs/**"
-      - "containers/**"
-      - "presets/**"
-      - "scripts/**"
-      - "services/**"
-      - ".github/workflows/build-ignition.yml"
-      - "index.html"
+    paths-ignore:
+      - README.md
+      - .gitignore
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Fedora release version"
+        required: false
+        default: ""
 
 env:
   STREAM: stable
   BUTANE_IMAGE: quay.io/coreos/butane:release
   INSTALLER_IMAGE: quay.io/coreos/coreos-installer:release
-  IMAGE_NAME: ghcr.io/noobping/pxeboot
+  IMAGE_NAME: ghcr.io/noobping/netboot
 
 jobs:
-  changes:
+  compute-version:
     runs-on: ubuntu-latest
     outputs:
-      site_or_ignition: ${{ steps.filter.outputs.site_or_ignition }}
+      version: ${{ steps.setver.outputs.version }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Install deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y skopeo jq
 
-      - name: Filter changed paths
-        id: filter
-        uses: dorny/paths-filter@v3
-        with:
-          filters: |
-            site_or_ignition:
-              - 'index.html'
-              - 'butane/**'
-              - "services/**"
-              - "presets/**"
-              - "containers/**"
+      - id: setver
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+            echo "Manual version supplied: $VERSION"
+          else
+            LATEST_TAG="$(skopeo list-tags docker://quay.io/fedora-ostree-desktops/silverblue \
+              | jq -r '.Tags[]' | grep -E '^[0-9]+$' | sort -V | tail -1)"
+            VERSION=$((LATEST_TAG - 1))
+            echo "Auto-detected version: $VERSION"
+          fi
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
   generate-ignition:
+    needs: compute-version
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    env:
+      VERSION: ${{ needs.compute-version.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Set variables
+        run: |
+          sed "s|__VERSION__|$VERSION|g" configs/silverblue.conf > ks.cfg
 
       - name: Generate Ignition from Butane
         run: |
@@ -62,7 +76,7 @@ jobs:
           docker run --rm -i \
             -v "$PWD":/work -w /work \
             "$BUTANE_IMAGE" \
-            --files-dir . --strict < butane/fcos.bu > fcos.ign
+            --files-dir . --strict < butane/fcos.yml > fcos.ign
           ls -lh fcos.ign
 
       - name: Upload ignition + site files
@@ -71,7 +85,8 @@ jobs:
           name: files
           path: |
             fcos.ign
-            index.html
+            ks.cfg
+          if-no-files-found: error
 
   build-pxe:
     needs: generate-ignition
@@ -79,6 +94,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
+      packages: write
     strategy:
       fail-fast: false
       matrix:
@@ -137,9 +153,9 @@ jobs:
             --user "$(id -u):$(id -g)" \
             -v "$PWD":/work -w /work "$INSTALLER_IMAGE" \
             pxe customize \
-              --live-ignition /work/fcos.ign \
-              -o "/work/${OUT_INITRAMFS}" \
-              "/work/$(basename "$INITRAMFS")"
+              --live-ignition fcos.ign \
+              -o "${OUT_INITRAMFS}" \
+              "$(basename "$INITRAMFS")"
 
           ARCH="$(echo "$ROOTFS" | sed -n 's/.*live-rootfs\.\(.*\)\.img/\1/p')"
           mkdir -p "pxe-${ARCH}"
@@ -175,6 +191,7 @@ jobs:
             pxe-${{ matrix.arch }}/SHA256SUMS
           if-no-files-found: error
           compression-level: 6
+          overwrite: true
 
   boot-container:
     name: Build & Publish FCOS PXE Container
@@ -226,7 +243,7 @@ jobs:
           labels: |
             org.opencontainers.image.source=${{ github.repositoryUrl }}
             org.opencontainers.image.description=PXE server for Fedora CoreOS (TFTP + HTTP)
-            org.opencontainers.image.title=pxeboot
+            org.opencontainers.image.title=netboot
             org.opencontainers.image.licenses="MIT"
             io.containers.autoupdate="registry"
 
@@ -245,12 +262,14 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  build-iso:
-    needs:
-      - generate-ignition
-      - changes
-    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.site_or_ignition == 'true'
+  build-iso-fcos:
+    name: Build FCOS ISOs
+    needs: generate-ignition
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
     strategy:
       fail-fast: false
       matrix:
@@ -283,11 +302,11 @@ jobs:
             --user "$(id -u):$(id -g)" \
             -v "$PWD":/work -w /work "$INSTALLER_IMAGE" \
             iso customize \
-              --live-ignition /work/fcos.ign \
-              --dest-ignition /work/fcos.ign \
-              --pre-install /work/scripts/detect-device.sh \
-              -o /work/fcos-${ARCH}.iso \
-              "/work/${ISO}"
+              --live-ignition fcos.ign \
+              --dest-ignition fcos.ign \
+              --pre-install scripts/detect-device.sh \
+              -o fcos-${ARCH}.iso \
+              "${ISO}"
 
           ls -l fcos-${ARCH}.iso
 
@@ -298,16 +317,21 @@ jobs:
           path: fcos-${{ matrix.arch }}.iso
           if-no-files-found: error
           compression-level: 6
+          overwrite: true
 
   pages:
     needs:
+      - compute-version
       - generate-ignition
-      - changes
-    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.site_or_ignition == 'true'
+      - build-iso-fcos
     runs-on: ubuntu-latest
     permissions:
       pages: write
       id-token: write
+      contents: read
+      packages: read
+    env:
+      VERSION: ${{ needs.compute-version.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -317,6 +341,25 @@ jobs:
         with:
           name: files
           path: dist
+
+      - name: Prepare site files
+        run: |
+          set -euo pipefail
+          cp site/* dist/
+          cp dist/fcos.ign dist/ign.json
+          sed -i "s|__VERSION__|$VERSION|g" dist/index.html
+      
+      - name: "Download: fcos-x86_64.iso"
+        uses: actions/download-artifact@v4
+        with:
+          name: fcos-x86_64.iso
+          path: dist/fedora-coreos-$VERSION-x86_64.iso
+
+      - name: "Download: fcos-aarch64.iso"
+        uses: actions/download-artifact@v4
+        with:
+          name: fcos-aarch64.iso
+          path: dist/fedora-coreos-$VERSION-aarch64.iso
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

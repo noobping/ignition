@@ -1,0 +1,73 @@
+variant: fcos
+version: 1.6.0
+
+passwd:
+  users:
+    - name: nick
+      groups: [wheel]
+      password_hash: ""
+      ssh_authorized_keys:
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEjRfPMkXzhO4unF0mEOHge+wGAE9VarXYo7RRXX2L3j
+
+storage:
+  files:
+    - path: /etc/ssh/sshd_config.d/10-hardening.conf
+      mode: 0644
+      contents:
+        inline: |
+          PasswordAuthentication no
+          ChallengeResponseAuthentication no
+          KbdInteractiveAuthentication no
+          PubkeyAuthentication yes
+          PermitRootLogin no
+          UseDNS no
+
+    - path: /etc/containers/systemd/cockpit.container
+      mode: 0644
+      contents:
+        local: ./containers/cockpit.container
+
+    - path: /usr/local/bin/make-storage-pools.sh
+      mode: 0755
+      contents:
+        local: ./scripts/make-storage-pools.sh
+
+    - path: /etc/sudoers.d/nick
+      mode: 0440
+      contents:
+        inline: |
+          nick ALL=(ALL) NOPASSWD:ALL
+
+systemd:
+  units:
+    - name: getty@tty1.service
+      enabled: true
+      dropins:
+        - name: override.conf
+          contents: |
+            [Service]
+            ExecStart=
+            ExecStart=-/sbin/agetty --autologin nick --noclear %I $TERM
+
+    - name: sshd.service
+      enabled: true
+
+    - name: zincati.service
+      enabled: true
+
+    - name: podman-auto-update.timer
+      enabled: true
+
+    - name: set-timezone.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Set timezone to Europe/Amsterdam
+        After=network.target
+
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/bin/timedatectl set-timezone Europe/Amsterdam
+
+        [Install]
+        WantedBy=multi-user.target

@@ -1,4 +1,8 @@
+*.diff
 *.ign
 *.iso
-*.sig
 *.json
+*.sig
+.cache/
+/*.cfg
+file.tree

@@ -4,5 +4,6 @@
 *.json
 *.sig
 .cache/
+/*.bu
 /*.cfg
 file.tree

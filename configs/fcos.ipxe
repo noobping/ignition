@@ -1,23 +1,121 @@
 #!ipxe
 set pxe_http net.boot
 
-:menu
-menu FCOS Live
-item x86_64  FCOS x86_64
-item aarch64 FCOS aarch64
-choose target || goto menu
-goto ${target}
+:arch
+menu FCOS Architecture
+item --gap --           --------------------------
+item x86_64   FCOS x86_64
+item aarch64  FCOS aarch64
+choose arch || goto arch
+goto ${arch}
 
 :x86_64
+:menu_x
+menu FCOS x86_64 Profiles
+item live     Live (no install)
+item auto     Auto Install (default)
+item single   Single
+item double   Double
+item nas      NAS
+choose prof || goto menu_x
+goto x86_${prof}
+
+# Live session
+:x86_live
 kernel http://${pxe_http}/fcos/kernel-x86_64 \
     ignition.firstboot ignition.platform.id=metal \
-    coreos.live.rootfs_url=http://${pxe_http}/fcos/rootfs-x86_64.img
+    coreos.live.rootfs_url=http://${pxe_http}/fcos/rootfs-x86_64.img \
+    ignition.config.url=http://${pxe_http}/live.ign
 initrd http://${pxe_http}/fcos/initramfs-x86_64.img
 boot
 
+# Installer entries
+:x86_auto
+kernel http://${pxe_http}/fcos/kernel-x86_64 \
+    ignition.firstboot ignition.platform.id=metal \
+    coreos.live.rootfs_url=http://${pxe_http}/fcos/rootfs-x86_64.img \
+    coreos.inst.ignition_url=http://${pxe_http}/auto.ign
+initrd http://${pxe_http}/fcos/initramfs-x86_64.img
+boot
+
+:x86_single
+kernel http://${pxe_http}/fcos/kernel-x86_64 \
+    ignition.firstboot ignition.platform.id=metal \
+    coreos.live.rootfs_url=http://${pxe_http}/fcos/rootfs-x86_64.img \
+    coreos.inst.install_dev=/dev/nvme0n1 \
+    coreos.inst.ignition_url=http://${pxe_http}/single.ign
+initrd http://${pxe_http}/fcos/initramfs-x86_64.img
+boot
+
+:x86_double
+kernel http://${pxe_http}/fcos/kernel-x86_64 \
+    ignition.firstboot ignition.platform.id=metal \
+    coreos.live.rootfs_url=http://${pxe_http}/fcos/rootfs-x86_64.img \
+    coreos.inst.install_dev=/dev/nvme0n1 \
+    coreos.inst.ignition_url=http://${pxe_http}/double.ign
+initrd http://${pxe_http}/fcos/initramfs-x86_64.img
+boot
+
+:x86_nas
+kernel http://${pxe_http}/fcos/kernel-x86_64 \
+    ignition.firstboot ignition.platform.id=metal \
+    coreos.live.rootfs_url=http://${pxe_http}/fcos/rootfs-x86_64.img \
+    coreos.inst.install_dev=/dev/nvme0n1 \
+    coreos.inst.ignition_url=http://${pxe_http}/nas.ign
+initrd http://${pxe_http}/fcos/initramfs-x86_64.img
+boot
+
+# ----- aarch64 -----
 :aarch64
+:menu_a
+menu FCOS aarch64 Profiles
+item live     Live (no install)
+item auto     Auto Install (default)
+item single   Single
+item double   Double
+item nas      NAS
+choose prof || goto menu_a
+goto a64_${prof}
+
+:a64_live
 kernel http://${pxe_http}/fcos/kernel-aarch64 \
     ignition.firstboot ignition.platform.id=metal \
-    coreos.live.rootfs_url=http://${pxe_http}/fcos/rootfs-aarch64.img
+    coreos.live.rootfs_url=http://${pxe_http}/fcos/rootfs-aarch64.img \
+    ignition.config.url=http://${pxe_http}/live.ign
+initrd http://${pxe_http}/fcos/initramfs-aarch64.img
+boot
+
+:a64_auto
+kernel http://${pxe_http}/fcos/kernel-aarch64 \
+    ignition.firstboot ignition.platform.id=metal \
+    coreos.live.rootfs_url=http://${pxe_http}/fcos/rootfs-aarch64.img \
+    coreos.inst.ignition_url=http://${pxe_http}/auto.ign
+initrd http://${pxe_http}/fcos/initramfs-aarch64.img
+boot
+
+:a64_single
+kernel http://${pxe_http}/fcos/kernel-aarch64 \
+    ignition.firstboot ignition.platform.id=metal \
+    coreos.live.rootfs_url=http://${pxe_http}/fcos/rootfs-aarch64.img \
+    coreos.inst.install_dev=/dev/nvme0n1 \
+    coreos.inst.ignition_url=http://${pxe_http}/single.ign
+initrd http://${pxe_http}/fcos/initramfs-aarch64.img
+boot
+
+:a64_double
+kernel http://${pxe_http}/fcos/kernel-aarch64 \
+    ignition.firstboot ignition.platform.id=metal \
+    coreos.live.rootfs_url=http://${pxe_http}/fcos/rootfs-aarch64.img \
+    coreos.inst.install_dev=/dev/nvme0n1 \
+    coreos.inst.ignition_url=http://${pxe_http}/double.ign
+initrd http://${pxe_http}/fcos/initramfs-aarch64.img
+boot
+
+:a64_nas
+kernel http://${pxe_http}/fcos/kernel-aarch64 \
+    ignition.firstboot ignition.platform.id=metal \
+    coreos.live.rootfs_url=http://${pxe_http}/fcos/rootfs-aarch64.img \
+    coreos.inst.install_dev=/dev/nvme0n1 \
+    coreos.inst.ignition_url=http://${pxe_http}/nas.ign
 initrd http://${pxe_http}/fcos/initramfs-aarch64.img
 boot

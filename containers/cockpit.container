@@ -6,8 +6,11 @@ Volume=/var/run/dbus:/var/run/dbus
 Volume=/:/host
 Environment=COCKPIT_PORT=9090
 User=0
-Restart=always
 AutoUpdate=registry
+
+[Service]
+Restart=always
+TimeoutStartSec=900
 
 [Install]
 WantedBy=multi-user.target

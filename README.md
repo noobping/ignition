@@ -5,7 +5,7 @@
 # Ignition
 
 My Fedora CoreOS Ignition files and related scripts. The goal is to automate the provisioning of Fedora CoreOS and Fedora Silverblue systems.
-The ignition file is generated from the [butane file](butane/fcos.yml). 
+The ignition file is generated from the [butane file](butane/base.yml). 
 The pipeline integrates the ignition file into ISOs and a network boot environment. So that new systems can be provisioned via network boot or bootable ISOs.
 
 ## Network Boot Environment
@@ -24,5 +24,5 @@ podman run --rm -p 80:80 -p 69:69/udp ghcr.io/noobping/netboot:latest
 Build the ignition file from the butane file:
 
 ```sh
-podman run --rm -i -v "$PWD":/work:Z -w /work quay.io/coreos/butane:release --files-dir . --strict < butane/fcos.yml > fcos.ign
+podman run --rm -i -v "$PWD":/work:Z -w /work quay.io/coreos/butane:release --files-dir . --strict < butane/base.yml > fcos.ign
 ```

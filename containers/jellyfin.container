@@ -1,0 +1,27 @@
+[Unit]
+Description=Podman - Jellyfin
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+Image=ghcr.io/jellyfin/jellyfin:latest
+AutoUpdate=registry
+ContainerName=jellyfin
+Environment=PUID=1000
+Environment=PGID=1000
+Environment=TZ=Europe/Amsterdam
+Volume=/var/srv/cold/media:/media
+Volume=/var/srv/cold/books:/books
+Volume=/var/srv/hot/config/jellyfin:/config
+Volume=/var/srv/hot/music:/music
+PublishPort=8096:8096
+PublishPort=8920:8920
+PublishPort=7359:7359/udp
+PublishPort=1900:1900/udp
+
+[Service]
+Restart=always
+TimeoutStartSec=900
+
+[Install]
+WantedBy=default.target

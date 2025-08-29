@@ -17,16 +17,20 @@ set -euo pipefail
 #
 
 if [[ $# -lt 1 ]]; then
-  echo "Usage: $0 <fedora release version>" >&2
+  echo "Usage: $0 <fedora version number> <release build date>" >&2
+  echo "Example: $0 42 20250828.0" >&2
   exit 64
 fi
 
-TAG="$1"
+VERSION="$1"
+RELEASE="${2}"
 
-sed "s|__VERSION__|$TAG|g" configs/silverblue.conf > ks.cfg || true
+sed "s|__VERSION__|$VERSION|g" configs/silverblue.conf > ks.cfg || true
+sed -i "s|__RELEASE__|$RELEASE|g" ks.cfg || true
+sed -i "s|__ARCH__|$(uname -m)|g" ks.cfg || true
 
 shopt -s nullglob
-files=(Fedora-Silverblue-*-$(uname -m)-${TAG}*.iso)
+files=(Fedora-Silverblue-*-$(uname -m)-${VERSION}*.iso)
 if (( ${#files[@]} == 0 )); then
     echo "Error: no ISO found"
     exit 1
@@ -120,14 +124,13 @@ VOLID="$(
 )"
 echo "[*] Using volume ID: ${VOLID}"
 
-IMG_REF="quay.io/fedora-ostree-desktops/silverblue:${TAG}"
+IMG_REF="quay.io/fedora-ostree-desktops/silverblue:${VERSION}.$RELEASE-$(uname -m)"
 OCI_TAR="$WORKDIR/silverblue.oci.tar"
 
 # echo "[*] Fetching container to OCI archive..."
-# skopeo copy "docker://$IMG_REF" "oci-archive:$OCI_TAR:${TAG}"
-# skopeo copy --override-arch amd64 --override-os linux \
-#   docker://quay.io/fedora-ostree-desktops/silverblue:${TAG} \
-#   oci-archive:$WORKDIR/silverblue.oci.tar:${TAG}
+# skopeo copy "docker://$IMG_REF" "oci-archive:$OCI_TAR:${VERSION}.$RELEASE-$(uname -m)"
+# skopeo copy docker://quay.io/fedora-ostree-desktops/silverblue:${VERSION}.$RELEASE-$(uname -m)
+#             oci-archive:$WORKDIR/silverblue.oci.tar
 
 echo "[*] Building output ISO (replay boot + graft only changed files) -> $OUT_ISO"
 xorriso \

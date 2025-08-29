@@ -1,0 +1,26 @@
+variant: fcos
+version: 1.6.0
+
+storage:
+  disks:
+    - device: /dev/nvme0n2
+      wipe_table: true
+      partitions:
+        - label: hot
+          size_mib: 0
+
+  luks:
+    - name: hot_crypt
+      device: /dev/disk/by-partlabel/hot
+      wipe_volume: true
+      clevis:
+        tpm2: true
+
+  filesystems:
+    - path: /var/srv/hot
+      device: /dev/mapper/hot_crypt
+      format: btrfs
+      mount_options:
+        - compress=zstd
+        - noatime
+      with_mount_unit: true

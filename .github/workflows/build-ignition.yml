@@ -405,7 +405,7 @@ jobs:
       fail-fast: false
       matrix:
         arch: [x86_64, aarch64]
-        profile: [live, auto, single, double, nas]
+        profile: [auto]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -494,6 +494,7 @@ jobs:
           set -euo pipefail
           cp site/* dist/
           cp dist/auto.ign dist/ign.json
+          cp dist/auto.ign dist/fcos.ign
           sed -i "s|__VERSION__|$VERSION|g" dist/index.html
           sed -i "s|__RELEASE__|$RELEASE|g" dist/index.html
 

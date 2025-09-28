@@ -2,8 +2,10 @@
 Image=quay.io/cockpit/ws:latest
 ContainerName=cockpit
 Network=host
+Volume=/:/host:ro
 Volume=/var/run/dbus:/var/run/dbus
-Volume=/:/host
+Volume=/etc/pam.d:/host/etc/pam.d:Z
+Volume=/etc/cockpit:/host/etc/cockpit:Z
 Environment=COCKPIT_PORT=9090
 User=0
 AutoUpdate=registry
@@ -13,4 +15,4 @@ Restart=always
 TimeoutStartSec=900
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target

@@ -166,6 +166,7 @@ jobs:
           set -euo pipefail
           yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/encrypted.yml > encrypted.bu
           yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/encrypted.yml butane/steam.yml > steam.bu
+          yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/encrypted.yml butane/cockpit.yml > cockpit.bu
           yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/live.yml > live.bu
 
       - name: Encrypted system ignition
@@ -183,6 +184,14 @@ jobs:
             -v "$PWD":/work -w /work \
             "$BUTANE_IMAGE" \
             --files-dir . --strict < steam.bu > steam.ign
+      
+      - name: Cockpit ignition
+        run: |
+          set -euo pipefail
+          docker run --rm -i \
+            -v "$PWD":/work -w /work \
+            "$BUTANE_IMAGE" \
+            --files-dir . --strict < cockpit.bu > cockpit.ign
 
       - name: Live ignition
         run: |
@@ -387,7 +396,7 @@ jobs:
       fail-fast: false
       matrix:
         arch: [x86_64, aarch64]
-        profile: [encrypted, steam]
+        profile: [encrypted, steam, cockpit]
     steps:
       - name: Checkout
         uses: actions/checkout@v4

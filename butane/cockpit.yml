@@ -1,0 +1,29 @@
+variant: fcos
+version: 1.6.0
+
+storage:
+    - path: /etc/containers/systemd/cockpit.container
+      mode: 0644
+      contents:
+        local: ./containers/cockpit.container
+
+systemd:
+  units:
+    - name: cockpit.service
+      enabled: false
+
+    - name: install-packages.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Install software packages via rpm-ostree
+        Wants=network-online.target
+        After=network-online.target
+        ConditionFirstBoot=yes
+
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/bin/rpm-ostree install cockpit-system cockpit-ostree cockpit-podman
+
+        [Install]
+        WantedBy=multi-user.target

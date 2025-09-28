@@ -20,11 +20,6 @@ storage:
         inline: |
           nick ALL=(ALL) NOPASSWD:ALL
 
-    - path: /etc/containers/systemd/cockpit.container
-      mode: 0644
-      contents:
-        local: ./containers/cockpit.container
-
     - path: /etc/containers/systemd/jellyfin.container
       mode: 0644
       contents:

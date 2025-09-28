@@ -62,7 +62,10 @@ systemd:
       enabled: true
 
     - name: cockpit.service
-      enabled: true
+      enabled: false
+    
+    - name: jellyfin.service
+      enabled: false
 
     - name: podman-auto-update.timer
       enabled: true

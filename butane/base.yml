@@ -30,6 +30,11 @@ storage:
       contents:
         local: ./containers/jellyfin.container
 
+    - path: /etc/containers/systemd/nextcloud.container
+      mode: 0644
+      contents:
+        local: ./containers/nextcloud.container
+
 systemd:
   units:
     - name: getty@tty1.service

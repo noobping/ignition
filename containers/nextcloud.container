@@ -1,0 +1,23 @@
+[Unit]
+Description=Podman - Nextcloud All-in-One
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+Image=ghcr.io/nextcloud-releases/all-in-one:latest
+AutoUpdate=registry
+ContainerName=nextcloud
+RunInit=true
+PodmanArgs=--sig-proxy=false
+PublishPort=80:80
+PublishPort=8080:8080
+PublishPort=8443:8443
+Volume=nextcloud_aio_mastercontainer:/mnt/docker-aio-config
+Volume=/var/run/docker.sock:/var/run/docker.sock:ro
+
+[Service]
+Restart=always
+TimeoutStartSec=900
+
+[Install]
+WantedBy=default.target

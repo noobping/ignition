@@ -14,17 +14,6 @@ passwd:
 
 storage:
   files:
-    - path: /etc/ssh/sshd_config.d/10-hardening.conf
-      mode: 0644
-      contents:
-        inline: |
-          PasswordAuthentication no
-          ChallengeResponseAuthentication no
-          KbdInteractiveAuthentication no
-          PubkeyAuthentication yes
-          PermitRootLogin no
-          UseDNS no
-
     - path: /etc/sudoers.d/nick
       mode: 0440
       contents:
@@ -60,12 +49,6 @@ systemd:
 
     - name: podman.socket
       enabled: true
-
-    - name: cockpit.service
-      enabled: false
-    
-    - name: jellyfin.service
-      enabled: false
 
     - name: podman-auto-update.timer
       enabled: true

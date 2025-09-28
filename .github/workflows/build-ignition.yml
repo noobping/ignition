@@ -1,4 +1,4 @@
-name: Build Ignition
+name: Build ignition
 
 concurrency:
   group: build-ignition-${{ github.ref }}
@@ -164,22 +164,19 @@ jobs:
       - name: Profiles
         run: |
           set -euo pipefail
-          yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/auto.yml > auto.bu
-          yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/auto.yml butane/steam.yml > steam.bu
+          yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/encrypted.yml > encrypted.bu
+          yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/encrypted.yml butane/steam.yml > steam.bu
           yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/live.yml > live.bu
-          yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/nvme.yml > single.bu
-          yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/nvme.yml butane/data.yml > double.bu
-          yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/nvme.yml butane/nas.yml > nas.bu
 
-      - name: Auto Ignition
+      - name: Encrypted system ignition
         run: |
           set -euo pipefail
           docker run --rm -i \
             -v "$PWD":/work -w /work \
             "$BUTANE_IMAGE" \
-            --files-dir . --strict < auto.bu > auto.ign
+            --files-dir . --strict < encrypted.bu > encrypted.ign
       
-      - name: Steam Ignition
+      - name: Steam ignition
         run: |
           set -euo pipefail
           docker run --rm -i \
@@ -187,37 +184,13 @@ jobs:
             "$BUTANE_IMAGE" \
             --files-dir . --strict < steam.bu > steam.ign
 
-      - name: Live Ignition
+      - name: Live ignition
         run: |
           set -euo pipefail
           docker run --rm -i \
             -v "$PWD":/work -w /work \
             "$BUTANE_IMAGE" \
             --files-dir . --strict < live.bu > live.ign
-
-      - name: Single Ignition
-        run: |
-          set -euo pipefail
-          docker run --rm -i \
-            -v "$PWD":/work -w /work \
-            "$BUTANE_IMAGE" \
-            --files-dir . --strict < single.bu > single.ign
-
-      - name: Double Ignition
-        run: |
-          set -euo pipefail
-          docker run --rm -i \
-            -v "$PWD":/work -w /work \
-            "$BUTANE_IMAGE" \
-            --files-dir . --strict < double.bu > double.ign
-
-      - name: NAS Ignition
-        run: |
-          set -euo pipefail
-          docker run --rm -i \
-            -v "$PWD":/work -w /work \
-            "$BUTANE_IMAGE" \
-            --files-dir . --strict < nas.bu > nas.ign
 
       - name: Upload ignition + site files
         uses: actions/upload-artifact@v4
@@ -261,7 +234,7 @@ jobs:
               download -s "$STREAM" -a "${{ matrix.arch }}" -p metal -f pxe -C /work --decompress
           ls -lh
 
-      - name: Embed Ignition into initramfs
+      - name: Embed ignition into initramfs
         env:
           INSTALLER_IMAGE: ${{ env.INSTALLER_IMAGE }}
         run: |
@@ -414,7 +387,7 @@ jobs:
       fail-fast: false
       matrix:
         arch: [x86_64, aarch64]
-        profile: [auto, steam]
+        profile: [encrypted, steam]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -433,7 +406,7 @@ jobs:
             -v "$PWD":/work -w /work "$INSTALLER_IMAGE" \
             download -s "$STREAM" -a "${{ matrix.arch }}" -p metal -f iso -C /work --decompress
 
-      - name: Customize ISO with Ignition
+      - name: Customize ISO with ignition
         run: |
           set -euo pipefail
           ARCH="${{ matrix.arch }}"
@@ -442,16 +415,10 @@ jobs:
           EXTRA=""
 
           echo "Customizing ISO: $ISO (arch: $ARCH, profile: $PROFILE)"
-          if [[ "$PROFILE" == "auto" ]]; then
-            EXTRA+=" --pre-install scripts/detect-device.sh"
-          fi
-
           if [[ "$PROFILE" != "live" ]]; then
             EXTRA+=" --dest-ignition ${PROFILE}.ign"
-          fi
-
-          if [[ "$PROFILE" != "live" && "$PROFILE" != "auto" ]]; then
-            EXTRA+=" --dest-device /dev/nvme0n1"
+          else
+            EXTRA+=" --pre-install scripts/detect-device.sh"
           fi
           echo "Extra args: $EXTRA"
 
@@ -502,8 +469,8 @@ jobs:
         run: |
           set -euo pipefail
           cp site/* dist/
-          cp dist/auto.ign dist/ign.json
-          cp dist/auto.ign dist/fcos.ign
+          cp dist/encrypted.ign dist/ign.json
+          cp dist/encrypted.ign dist/fcos.ign
           sed -i "s|__VERSION__|$VERSION|g" dist/index.html
           sed -i "s|__RELEASE__|$RELEASE|g" dist/index.html
 

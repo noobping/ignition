@@ -165,6 +165,7 @@ jobs:
         run: |
           set -euo pipefail
           yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/auto.yml > auto.bu
+          yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/auto.yml butane/steam.yml > steam.bu
           yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/live.yml > live.bu
           yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/nvme.yml > single.bu
           yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/nvme.yml butane/data.yml > double.bu
@@ -177,6 +178,14 @@ jobs:
             -v "$PWD":/work -w /work \
             "$BUTANE_IMAGE" \
             --files-dir . --strict < auto.bu > auto.ign
+      
+      - name: Steam Ignition
+        run: |
+          set -euo pipefail
+          docker run --rm -i \
+            -v "$PWD":/work -w /work \
+            "$BUTANE_IMAGE" \
+            --files-dir . --strict < steam.bu > steam.ign
 
       - name: Live Ignition
         run: |
@@ -405,7 +414,7 @@ jobs:
       fail-fast: false
       matrix:
         arch: [x86_64, aarch64]
-        profile: [auto]
+        profile: [auto, steam]
     steps:
       - name: Checkout
         uses: actions/checkout@v4

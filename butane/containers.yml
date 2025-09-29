@@ -8,6 +8,8 @@ passwd:
 
 storage:
   directories:
+    - path: /var/srv/hot/config/jellyfin
+      mode: 0755
     - path: /var/srv/hot/music/cds
       mode: 0755
       user:

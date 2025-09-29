@@ -437,16 +437,16 @@ jobs:
             iso customize \
               --live-ignition live.ign \
               $EXTRA \
-              -o fcos-$ARCH-$PROFILE.iso \
+              -o fedora-coreos-$ARCH-$PROFILE.iso \
               "${ISO}"
 
-          ls -l fcos-$ARCH-$PROFILE.iso
+          ls -l fedora-coreos-$ARCH-$PROFILE.iso
 
       - name: Upload ISO artifact
         uses: actions/upload-artifact@v4
         with:
-          name: fcos-${{ matrix.arch }}-${{ matrix.profile }}.iso
-          path: fcos-${{ matrix.arch }}-${{ matrix.profile }}.iso
+          name: fedora-coreos-${{ matrix.arch }}-${{ matrix.profile }}.iso
+          path: fedora-coreos-${{ matrix.arch }}-${{ matrix.profile }}.iso
           if-no-files-found: error
           compression-level: 6
           overwrite: true

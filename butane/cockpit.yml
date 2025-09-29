@@ -25,6 +25,7 @@ systemd:
         [Service]
         Type=oneshot
         ExecStart=/usr/bin/rpm-ostree install cockpit-system cockpit-ostree cockpit-podman
+        ExecStartPost=/usr/bin/systemctl enable cockpit.service
 
         [Install]
         WantedBy=multi-user.target

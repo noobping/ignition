@@ -1,6 +1,11 @@
 variant: fcos
 version: 1.6.0
 
+passwd:
+  users:
+    - name: root
+      password_hash: "$6$lwtriV8STaaxRgKj$8bjLUeOLTlOvsfn4hX6D8EJITdyyraQVcv/h8Auz3oJ0l2LSE8ejFj.cmdm3j.M/AsrP6/rpdcxmPzKHwgFDF."
+
 storage:
   files:
     - path: /usr/local/sbin/detect-device.sh

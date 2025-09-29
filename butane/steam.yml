@@ -8,24 +8,6 @@ passwd:
 
 storage:
   directories:
-    - path: /var/home/player/.config
-      mode: 0755
-      user:
-        name: player
-      group:
-        name: player
-    - path: /var/home/player/.config/containers
-      mode: 0755
-      user:
-        name: player
-      group:
-        name: player
-    - path: /var/home/player/.config/containers/systemd
-      mode: 0755
-      user:
-        name: player
-      group:
-        name: player
     - path: /var/srv/hot/steam/data
       mode: 0755
       user:
@@ -39,11 +21,7 @@ storage:
       group:
         name: player
   files:
-    - path: /var/home/player/.config/containers/systemd/steam.container
+    - path: /etc/containers/systemd/steam.container
       mode: 0644
-      user:
-        name: player
-      group:
-        name: player
       contents:
         local: ./containers/steam.container

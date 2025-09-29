@@ -165,8 +165,9 @@ jobs:
         run: |
           set -euo pipefail
           yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/encrypted.yml > encrypted.bu
-          yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/encrypted.yml butane/steam.yml > steam.bu
-          yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/encrypted.yml butane/cockpit.yml > cockpit.bu
+          yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/encrypted.yml butane/containers.yml > containers.bu
+          yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/encrypted.yml butane/containers.yml butane/steam.yml > steam.bu
+          yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/encrypted.yml butane/containers.yml butane/cockpit.yml > cockpit.bu
           yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/live.yml > live.bu
 
       - name: Encrypted system ignition
@@ -176,6 +177,14 @@ jobs:
             -v "$PWD":/work -w /work \
             "$BUTANE_IMAGE" \
             --files-dir . --strict < encrypted.bu > encrypted.ign
+
+      - name: Containers ignition
+        run: |
+          set -euo pipefail
+          docker run --rm -i \
+            -v "$PWD":/work -w /work \
+            "$BUTANE_IMAGE" \
+            --files-dir . --strict < containers.bu > containers.ign
       
       - name: Steam ignition
         run: |

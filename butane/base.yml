@@ -19,6 +19,12 @@ storage:
       contents:
         inline: |
           nick ALL=(ALL) NOPASSWD:ALL
+    - path: /etc/motd
+      mode: 0644
+      contents:
+        inline: |
+          Welcome Nick! Please don't forget to set a passwd using:
+          sudo passwd nick
 
 systemd:
   units:

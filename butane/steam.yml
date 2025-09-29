@@ -4,7 +4,7 @@ version: 1.6.0
 passwd:
   users:
     - name: player
-      groups: [ video, audio, input ]
+      uid: 1001
 
 storage:
   directories:

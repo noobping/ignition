@@ -2,6 +2,7 @@ variant: fcos
 version: 1.6.0
 
 storage:
+  files:
     - path: /etc/containers/systemd/cockpit.container
       mode: 0644
       contents:

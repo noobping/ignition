@@ -442,8 +442,7 @@ jobs:
 
   pages:
     needs:
-      - compute-version
-      - generate-ignition
+      - build-iso-fcos
     runs-on: ubuntu-latest
     permissions:
       pages: write

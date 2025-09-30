@@ -13,7 +13,7 @@ PublishPort=80:80
 PublishPort=8080:8080
 PublishPort=8443:8443
 Volume=nextcloud_aio_mastercontainer:/mnt/docker-aio-config
-Volume=/run/podman/podman.sock:/var/run/docker.sock:ro
+Volume=/run/podman/podman.sock:/var/run/docker.sock:Z
 
 [Service]
 Restart=always

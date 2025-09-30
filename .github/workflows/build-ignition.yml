@@ -450,6 +450,7 @@ jobs:
       id-token: write
       contents: read
       packages: read
+      actions: read
     env:
       VERSION: ${{ needs.compute-version.outputs.version }}
       RELEASE: ${{ needs.compute-version.outputs.release }}
@@ -463,6 +464,56 @@ jobs:
           name: files
           path: dist
 
+      - name: Resolve artifact URLs
+        id: artifacts
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          owner_repo="${{ github.repository }}"
+          run_id="${{ github.run_id }}"
+
+          # Helper to fetch an artifact ID by its name (exact match)
+          art_id() {
+            gh api "/repos/$owner_repo/actions/runs/$run_id/artifacts" \
+              -q ".artifacts[] | select(.name == \"$1\") | .id"
+          }
+
+          # Look up each artifact id
+          AARCH64_STABLE_ID="$(art_id 'fedora-coreos-aarch64-stable.iso')"
+          AARCH64_TESTING_ID="$(art_id 'fedora-coreos-aarch64-testing.iso')"
+          X86_64_STABLE_ID="$(art_id 'fedora-coreos-x86_64-stable.iso')"
+          X86_64_TESTING_ID="$(art_id 'fedora-coreos-x86_64-testing.iso')"
+
+          # Fail clearly if any are missing
+          for n in \
+            "AARCH64_STABLE_ID:$AARCH64_STABLE_ID:fedora-coreos-aarch64-stable.iso" \
+            "AARCH64_TESTING_ID:$AARCH64_TESTING_ID:fedora-coreos-aarch64-testing.iso" \
+            "X86_64_STABLE_ID:$X86_64_STABLE_ID:fedora-coreos-x86_64-stable.iso" \
+            "X86_64_TESTING_ID:$X86_64_TESTING_ID:fedora-coreos-x86_64-testing.iso"
+          do
+            var="${n%%:*}"; val="${n#*:}"; name="${n##*:}"
+            if [[ -z "$val" ]]; then
+              echo "::error title=Artifact missing::Expected artifact '$name' not found in run $run_id"
+              exit 1
+            fi
+          done
+
+          base="https://github.com/$owner_repo/actions/runs/$run_id/artifacts"
+          AARCH64_STABLE_URL="$base/$AARCH64_STABLE_ID"
+          AARCH64_TESTING_URL="$base/$AARCH64_TESTING_ID"
+          X86_64_STABLE_URL="$base/$X86_64_STABLE_ID"
+          X86_64_TESTING_URL="$base/$X86_64_TESTING_ID"
+
+          # Expose as outputs
+          {
+            echo "aarch64_stable=$AARCH64_STABLE_URL"
+            echo "aarch64_testing=$AARCH64_TESTING_URL"
+            echo "x86_64_stable=$X86_64_STABLE_URL"
+            echo "x86_64_testing=$X86_64_TESTING_URL"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Prepare site files
         run: |
           set -euo pipefail
@@ -471,6 +522,12 @@ jobs:
           cp dist/stable.ign dist/fcos.ign
           sed -i "s|__VERSION__|$VERSION|g" dist/index.html
           sed -i "s|__RELEASE__|$RELEASE|g" dist/index.html
+
+          # Inject artifact links from the current run
+          sed -i "s|__FCOS_AARCH64_STABLE__|${{ steps.artifacts.outputs.aarch64_stable }}|g"   dist/index.html
+          sed -i "s|__FCOS_AARCH64_TESTING__|${{ steps.artifacts.outputs.aarch64_testing }}|g" dist/index.html
+          sed -i "s|__FCOS_X86_64_STABLE__|${{ steps.artifacts.outputs.x86_64_stable }}|g"     dist/index.html
+          sed -i "s|__FCOS_X86_64_TESTING__|${{ steps.artifacts.outputs.x86_64_testing }}|g"   dist/index.html
 
       - run: tree
         continue-on-error: true

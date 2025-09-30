@@ -485,20 +485,6 @@ jobs:
           X86_64_STABLE_ID="$(art_id 'fedora-coreos-x86_64-stable.iso')"
           X86_64_TESTING_ID="$(art_id 'fedora-coreos-x86_64-testing.iso')"
 
-          # Fail clearly if any are missing
-          for n in \
-            "AARCH64_STABLE_ID:$AARCH64_STABLE_ID:fedora-coreos-aarch64-stable.iso" \
-            "AARCH64_TESTING_ID:$AARCH64_TESTING_ID:fedora-coreos-aarch64-testing.iso" \
-            "X86_64_STABLE_ID:$X86_64_STABLE_ID:fedora-coreos-x86_64-stable.iso" \
-            "X86_64_TESTING_ID:$X86_64_TESTING_ID:fedora-coreos-x86_64-testing.iso"
-          do
-            var="${n%%:*}"; val="${n#*:}"; name="${n##*:}"
-            if [[ -z "$val" ]]; then
-              echo "::error title=Artifact missing::Expected artifact '$name' not found in run $run_id"
-              exit 1
-            fi
-          done
-
           base="https://github.com/$owner_repo/actions/runs/$run_id/artifacts"
           AARCH64_STABLE_URL="$base/$AARCH64_STABLE_ID"
           AARCH64_TESTING_URL="$base/$AARCH64_TESTING_ID"

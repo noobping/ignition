@@ -1,45 +1,12 @@
 variant: fcos
 version: 1.6.0
 boot_device:
-  layout: false
   luks:
     tpm2: true
 
 storage:
   disks:
     - device: /dev/disk/by-id/coreos-boot-disk
-      wipe_table: true
       partitions:
-        - number: 1
-          label: efi
-          size_mib: 1024
-          type_guid: C12A7328-F81F-11D2-BA4B-00A0C93EC93B # EFI System
-        - number: 2
-          label: boot
-          size_mib: 1024
-          type_guid: 0FC63DAF-8483-4772-8E79-3D69D8477DE4 # Linux filesystem
         - number: 3
-          label: root
-          size_mib: 0 # use the rest of the disk
-          type_guid: 0FC63DAF-8483-4772-8E79-3D69D8477DE4
-
-  filesystems:
-    - path: /boot/efi
-      device: /dev/disk/by-partlabel/efi
-      format: vfat
-      label: efi
-    - path: /boot
-      device: /dev/disk/by-partlabel/boot
-      format: ext4
-      label: boot
-    - path: /
-      device: /dev/mapper/root
-      format: btrfs
-      label: root
-      with_mount_unit: true
-
-  luks:
-    - name: root
-      device: /dev/disk/by-partlabel/root
-      tpm2: true
-      wipe_volume: true
+          size_mib: 1024

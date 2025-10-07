@@ -2,6 +2,9 @@ variant: fcos
 version: 1.6.0
 
 storage:
+  directories:
+    - path: /usr/local/bin
+      mode: 0755
   files:
     - path: /usr/local/bin/rebase-ostree.sh
       mode: 0755

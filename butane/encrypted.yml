@@ -3,3 +3,12 @@ version: 1.6.0
 boot_device: 
   luks: 
     tpm2: true
+
+storage:
+  disks:
+    - device: /dev/disk/by-id/coreos-boot-disk
+      partitions:
+        - number: 3
+          label: boot
+          size_mib: 1024
+          resize: true

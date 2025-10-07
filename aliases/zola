@@ -1,0 +1,1 @@
+alias zola="flatpak run org.getzola.zola"

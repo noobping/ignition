@@ -1,0 +1,13 @@
+alias git='podman run --rm -it \
+    --userns=keep-id \
+    --user $(id -u):$(id -g) \
+    -e HOME=/home/app \
+    -e GIT_COMMITTER_NAME="$(git config user.name)" \
+    -e GIT_COMMITTER_EMAIL="$(git config user.email)" \
+    -e GIT_AUTHOR_NAME="$(git config user.name)" \
+    -e GIT_AUTHOR_EMAIL="$(git config user.email)" \
+    -v "$HOME/.ssh:/home/app/.ssh:Z" \
+    -v "$HOME/.gitconfig:/home/app/.gitconfig:Z" \
+    -v "$PWD:/$PWD:Z" \
+    -w "$PWD" \
+    docker.io/library/git:latest git'

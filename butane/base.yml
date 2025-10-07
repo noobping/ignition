@@ -13,7 +13,38 @@ passwd:
         - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBgtZmKuTJY2z88tCrtexFTPmXGA6oR1m4XQVn8ZLzmj
 
 storage:
+  directories:
+    - path: /var/home/nick/.bashrc.d
+      mode: 0755
+      user:
+        name: nick
+      group:
+        name: nick
   files:
+    - path: /var/home/nick/.bashrc.d/git
+      mode: 0755
+      user:
+        name: nick
+      group:
+        name: nick
+      contents:
+        local: ./aliases/git
+    - path: /var/home/nick/.bashrc.d/pass
+      mode: 0755
+      user:
+        name: nick
+      group:
+        name: nick
+      contents:
+        local: ./aliases/pass
+    - path: /var/home/nick/.bashrc.d/zola
+      mode: 0755
+      user:
+        name: nick
+      group:
+        name: nick
+      contents:
+        local: ./aliases/zola
     - path: /etc/sudoers.d/nick
       mode: 0440
       contents:

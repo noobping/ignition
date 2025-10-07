@@ -1,0 +1,60 @@
+variant: fcos
+version: 1.6.0
+
+storage:
+  files:
+    - path: /usr/local/bin/rebase-ostree.sh
+      mode: 0755
+      contents:
+        local: ./scripts/rebase-ostree.sh
+
+    - path: /usr/share/applications/rebase-to-base.desktop
+      mode: 0644
+      contents:
+        inline: |
+          [Desktop Entry]
+          Type=Application
+          Name=Rebase to Fedora CoreOS
+          Comment=Rebase this system to Fedora CoreOS
+          Name[nl]=Overschakelen naar Fedora CoreOS
+          Comment[nl]=Schakel dit systeem over naar Fedora CoreOS
+          Exec=bash -lc 'pkexec /usr/local/bin/rebase-ostree.sh coreos; echo; read -n1 -rsp "Druk op een toets om te sluiten…"' 
+          Terminal=true
+          Icon=system-software-update
+          Categories=System;
+          Keywords=rebase;rpm-ostree;coreos;fedora;
+          Keywords[nl]=rebase;rpm-ostree;coreos;fedora;
+
+    - path: /usr/share/applications/rebase-to-silverblue.desktop
+      mode: 0644
+      contents:
+        inline: |
+          [Desktop Entry]
+          Type=Application
+          Name=Rebase to Fedora Silverblue
+          Comment=Rebase this system to Fedora Silverblue
+          Name[nl]=Overschakelen naar Fedora Silverblue
+          Comment[nl]=Schakel dit systeem over naar Fedora Silverblue
+          Exec=bash -lc 'pkexec /usr/local/bin/rebase-ostree.sh silverblue; echo; read -n1 -rsp "Druk op een toets om te sluiten…"' 
+          Terminal=true
+          Icon=org.fedoraproject.Silverblue
+          Categories=System;
+          Keywords=rebase;rpm-ostree;silverblue;fedora;
+          Keywords[nl]=rebase;rpm-ostree;silverblue;fedora;
+
+    - path: /usr/share/applications/rebase-to-kinoite.desktop
+      mode: 0644
+      contents:
+        inline: |
+          [Desktop Entry]
+          Type=Application
+          Name=Rebase to Fedora Kinoite
+          Comment=Rebase this system to Fedora Kinoite
+          Name[nl]=Overschakelen naar Fedora Kinoite
+          Comment[nl]=Schakel dit systeem over naar Fedora Kinoite
+          Exec=bash -lc 'pkexec /usr/local/bin/rebase-ostree.sh kinoite; echo; read -n1 -rsp "Druk op een toets om te sluiten…"' 
+          Terminal=true
+          Icon=org.fedoraproject.Kinoite
+          Categories=System;
+          Keywords=rebase;rpm-ostree;kinoite;fedora;
+          Keywords[nl]=rebase;rpm-ostree;kinoite;fedora;

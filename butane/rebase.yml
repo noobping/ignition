@@ -5,13 +5,15 @@ storage:
   directories:
     - path: /usr/local/bin
       mode: 0755
+    - path: /etc/skel/.local/share/applications
+      mode: 0755
   files:
     - path: /usr/local/bin/rebase-ostree.sh
       mode: 0755
       contents:
         local: ./scripts/rebase-ostree.sh
 
-    - path: /usr/share/applications/rebase-to-base.desktop
+    - path: /etc/skel/.local/share/applications/rebase-to-base.desktop
       mode: 0644
       contents:
         inline: |
@@ -28,7 +30,7 @@ storage:
           Keywords=rebase;rpm-ostree;coreos;fedora;
           Keywords[nl]=rebase;rpm-ostree;coreos;fedora;
 
-    - path: /usr/share/applications/rebase-to-silverblue.desktop
+    - path: /etc/skel/.local/share/applications/rebase-to-silverblue.desktop
       mode: 0644
       contents:
         inline: |
@@ -45,7 +47,7 @@ storage:
           Keywords=rebase;rpm-ostree;silverblue;fedora;
           Keywords[nl]=rebase;rpm-ostree;silverblue;fedora;
 
-    - path: /usr/share/applications/rebase-to-kinoite.desktop
+    - path: /etc/skel/.local/share/applications/rebase-to-kinoite.desktop
       mode: 0644
       contents:
         inline: |

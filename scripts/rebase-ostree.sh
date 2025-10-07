@@ -31,4 +31,4 @@ echo "Current deployments:"
 rpm-ostree status || true
 echo
 echo "Rebasing to: ${REFSPEC}"
-sudo rpm-ostree rebase "${REFSPEC}"; exit $?
+sudo rpm-ostree rebase "${REFSPEC}" "${@:3}"; exit $?

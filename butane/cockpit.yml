@@ -25,7 +25,7 @@ systemd:
         [Service]
         Type=oneshot
         ExecStart=/usr/bin/rpm-ostree install cockpit-system cockpit-ostree cockpit-podman libvirt qemu-kvm cockpit-machines cockpit-storaged cockpit-files cockpit-networkmanager cockpit-sosreport cockpit-kdump cockpit-selinux
-        ExecStartPost=/usr/bin/systemctl enable cockpit.service
+        ExecStartPost=/usr/bin/systemctl enable cockpit.service libvirtd.socket
 
         [Install]
         WantedBy=multi-user.target

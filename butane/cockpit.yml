@@ -7,6 +7,14 @@ storage:
       mode: 0644
       contents:
         local: ./containers/cockpit.container
+    - path: /etc/polkit-1/rules.d/50-libvirt-remote-access.rules
+      mode: 0644
+      contents: |
+        polkit.addRule(function(action, subject) {
+          if (action.id == "org.libvirt.unix.manage" && subject.isInGroup("wheel")) {
+            return polkit.Result.YES;
+          }
+        });
 
 systemd:
   units:

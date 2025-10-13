@@ -416,7 +416,7 @@ jobs:
 
           echo "Customizing ISO: $ISO (arch: $ARCH, profile: $PROFILE)"
           if [[ "$PROFILE" != "live" ]]; then
-            EXTRA=" --dest-ignition ${PROFILE}.ign --preserve-on-error --pre-install scripts/detect-device.sh"
+            EXTRA=" --dest-ignition ${PROFILE}.ign --pre-install scripts/detect-device.sh"
           fi
           echo "Extra args: $EXTRA"
 

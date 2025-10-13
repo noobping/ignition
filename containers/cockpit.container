@@ -1,18 +1,5 @@
 [Container]
 Image=quay.io/cockpit/ws:latest
-ContainerName=cockpit
-Network=host
-Volume=/:/host:ro
-Volume=/var/run/dbus:/var/run/dbus
-Volume=/etc/pam.d:/host/etc/pam.d:Z
-Volume=/etc/cockpit:/host/etc/cockpit:Z
-Environment=COCKPIT_PORT=9090
-User=0
+Name=cockpit-ws
 AutoUpdate=registry
-
-[Service]
-Restart=always
-TimeoutStartSec=900
-
-[Install]
-WantedBy=default.target
+RunArgs=--privileged --pid=host --network=host -v /:/host

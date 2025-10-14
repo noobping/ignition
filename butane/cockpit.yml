@@ -59,9 +59,8 @@ systemd:
 
         [Service]
         Type=oneshot
-        ExecStart=/usr/bin/rpm-ostree install --bypass-driver cockpit-system cockpit-ostree cockpit-podman libvirt qemu-kvm cockpit-machines cockpit-storaged cockpit-files cockpit-networkmanager cockpit-sosreport cockpit-kdump cockpit-selinux
-        ExecStartPre=/usr/bin/systemctl disable install-cockpit.service
-        ExecStartPost=/usr/bin/systemctl enable cockpit.service
+        ExecStart=/usr/bin/rpm-ostree install --reboot --bypass-driver cockpit-system cockpit-ostree cockpit-podman libvirt qemu-kvm cockpit-machines cockpit-storaged cockpit-files cockpit-networkmanager cockpit-sosreport cockpit-kdump cockpit-selinux
+        ExecStartPre=/usr/bin/sh -c "systemctl disable install-cockpit.service; systemctl enable cockpit.service"
 
         [Install]
         WantedBy=multi-user.target

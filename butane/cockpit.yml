@@ -34,6 +34,20 @@ systemd:
     - name: cockpit.service
       enabled: false
 
+    - name: enable-virtualization.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Enable all virtualization sockets
+
+        [Service]
+        Type=oneshot
+        ExecStart=/bin/sh -c "systemctl list-unit-files --type=socket | awk '/virt/ {print \$1}' | xargs -r systemctl enable --now"
+        ExecStartPost=/usr/bin/systemctl disable enable-virtualization.service
+
+        [Install]
+        WantedBy=multi-user.target
+
     - name: install-cockpit.service
       enabled: true
       contents: |
@@ -46,8 +60,7 @@ systemd:
         [Service]
         Type=oneshot
         ExecStartPre=/usr/bin/rpm-ostree install cockpit-system cockpit-ostree cockpit-podman libvirt qemu-kvm cockpit-machines cockpit-storaged cockpit-files cockpit-networkmanager cockpit-sosreport cockpit-kdump cockpit-selinux
-        ExecStart=/usr/bin/systemctl enable enable-cockpit.service
-        ExecStart=/usr/bin/systemctl disable install-cockpit.service
+        ExecStart=/bin/sh -c "systemctl enable enable-cockpit.service; systemctl disable install-cockpit.service"
         ExecStartPost=/usr/bin/rpm-ostree rebase --reboot fedora:fedora/x86_64/coreos/stable
 
         [Install]
@@ -64,13 +77,9 @@ systemd:
 
         [Service]
         Type=oneshot
-        ExecStartPre=/usr/bin/systemctl enable --now libvirtd.socket
-        ExecStartPre=/usr/bin/systemctl enable --now virtqemud.socket
-        ExecStart=/usr/bin/systemctl enable --now cockpit.service
-        ExecStart=/usr/bin/systemctl enable zincati.service
-        ExecStart=/usr/bin/systemctl disable enable-cockpit.service
-        ExecStartPost=/usr/bin/rm /etc/systemd/system/install-cockpit.service
-        ExecStartPost=/usr/bin/rm /etc/systemd/system/enable-cockpit.service
+        ExecStartPre=/usr/bin/systemctl enable --now cockpit.service
+        ExecStart=/usr/bin/systemctl enable --now zincati.service
+        ExecStartPost=/bin/sh -c "rm /etc/systemd/system/{install,enable}-cockpit.service"
 
         [Install]
         WantedBy=multi-user.target

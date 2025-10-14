@@ -59,9 +59,9 @@ systemd:
 
         [Service]
         Type=oneshot
-        ExecStartPre=/usr/bin/rpm-ostree install cockpit-system cockpit-ostree cockpit-podman libvirt qemu-kvm cockpit-machines cockpit-storaged cockpit-files cockpit-networkmanager cockpit-sosreport cockpit-kdump cockpit-selinux
+        ExecStartPre=/bin/sh -c "systemctl stop zincati; rpm-ostree install cockpit-system cockpit-ostree cockpit-podman libvirt qemu-kvm cockpit-machines cockpit-storaged cockpit-files cockpit-networkmanager cockpit-sosreport cockpit-kdump cockpit-selinux"
         ExecStart=/bin/sh -c "systemctl enable enable-cockpit.service; systemctl disable install-cockpit.service"
-        ExecStartPost=/usr/bin/rpm-ostree rebase --reboot fedora:fedora/x86_64/coreos/stable
+        ExecStartPost=/bin/rpm-ostree rebase --reboot fedora:fedora/x86_64/coreos/stable
 
         [Install]
         WantedBy=multi-user.target
@@ -76,9 +76,8 @@ systemd:
 
         [Service]
         Type=oneshot
-        ExecStartPre=/usr/bin/systemctl enable --now cockpit.service
-        ExecStart=/usr/bin/systemctl enable --now zincati.service
-        ExecStartPost=/bin/sh -c "rm /var/lib/coreos-container-signing-migration/failed.stamp /etc/systemd/system/{install,enable}-cockpit.service"
+        ExecStart=/usr/bin/systemctl enable --now cockpit.service
+        ExecStartPost=/bin/sh -c "rm /etc/systemd/system/{install,enable}-cockpit.service"
 
         [Install]
         WantedBy=multi-user.target

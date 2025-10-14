@@ -67,6 +67,7 @@ systemd:
         ExecStartPre=/usr/bin/systemctl enable --now libvirtd.socket
         ExecStartPre=/usr/bin/systemctl enable --now virtqemud.socket
         ExecStart=/usr/bin/systemctl enable --now cockpit.service
+        ExecStart=/usr/bin/systemctl enable zincati.service
         ExecStart=/usr/bin/systemctl disable enable-cockpit.service
         ExecStartPost=/usr/bin/rm /etc/systemd/system/install-cockpit.service
         ExecStartPost=/usr/bin/rm /etc/systemd/system/enable-cockpit.service

@@ -47,6 +47,7 @@ systemd:
         Type=oneshot
         ExecStartPre=/usr/bin/rpm-ostree install cockpit-system cockpit-ostree cockpit-podman libvirt qemu-kvm cockpit-machines cockpit-storaged cockpit-files cockpit-networkmanager cockpit-sosreport cockpit-kdump cockpit-selinux
         ExecStart=/usr/bin/systemctl enable enable-cockpit.service
+        ExecStart=/usr/bin/systemctl disable install-cockpit.service
         ExecStartPost=/usr/bin/rpm-ostree rebase --reboot fedora:fedora/x86_64/coreos/stable
 
         [Install]
@@ -66,6 +67,7 @@ systemd:
         ExecStartPre=/usr/bin/systemctl enable --now libvirtd.socket
         ExecStartPre=/usr/bin/systemctl enable --now virtqemud.socket
         ExecStart=/usr/bin/systemctl enable --now cockpit.service
+        ExecStart=/usr/bin/systemctl disable enable-cockpit.service
         ExecStartPost=/usr/bin/rm /etc/systemd/system/install-cockpit.service
         ExecStartPost=/usr/bin/rm /etc/systemd/system/enable-cockpit.service
 

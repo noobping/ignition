@@ -80,8 +80,3 @@ storage:
       mode: 0644
       contents:
         local: ./containers/nextcloud.container
-
-systemd:
-  units:
-    - name: podman-auto-update.timer
-      enabled: true

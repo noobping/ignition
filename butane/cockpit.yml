@@ -73,7 +73,6 @@ systemd:
         Description=Enable cockpit service
         Wants=network-online.target
         After=network-online.target
-        ConditionFirstBoot=yes
 
         [Service]
         Type=oneshot

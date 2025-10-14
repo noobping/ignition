@@ -65,3 +65,20 @@ systemd:
 
         [Install]
         WantedBy=multi-user.target
+
+    - name: migration-failed-handler.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Handle container signing migration failure
+        Wants=network-online.target
+        After=network-online.target
+        ConditionPathExists=/var/lib/coreos-container-signing-migration/failed.stamp
+
+        [Service]
+        Type=oneshot
+        ExecStartPre=/usr/bin/rm /var/lib/coreos-container-signing-migration/failed.stamp
+        ExecStart=/usr/bin/rpm-ostree rebase fedora:fedora/x86_64/coreos/stable
+
+        [Install]
+        WantedBy=multi-user.target

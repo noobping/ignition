@@ -1,11 +1,8 @@
 [Unit]
 Description=Podman - cockpit web service
-Wants=network-online.target
-After=network-online.target
 
 [Container]
 Image=quay.io/cockpit/ws:latest
-ContainerName=cockpit
 AutoUpdate=registry
 PodmanArgs=--privileged --pid=host --network=host -v /:/host
 

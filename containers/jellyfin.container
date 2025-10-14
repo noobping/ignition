@@ -1,12 +1,9 @@
 [Unit]
 Description=Podman - Jellyfin
-Wants=network-online.target
-After=network-online.target
 
 [Container]
 Image=ghcr.io/jellyfin/jellyfin:latest
 AutoUpdate=registry
-ContainerName=jellyfin
 Environment=PUID=1000
 Environment=PGID=1000
 Environment=TZ=Europe/Amsterdam

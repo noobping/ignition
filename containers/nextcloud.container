@@ -1,12 +1,9 @@
 [Unit]
 Description=Podman - Nextcloud All-in-One
-Wants=network-online.target
-After=network-online.target
 
 [Container]
 Image=ghcr.io/nextcloud-releases/all-in-one:latest
 AutoUpdate=registry
-ContainerName=nextcloud
 RunInit=true
 PodmanArgs=--sig-proxy=false
 PublishPort=80:80

@@ -1,12 +1,9 @@
 [Unit]
 Description=Podman - Steam Remote Play
-Wants=network-online.target
-After=network-online.target
 
 [Container]
 Image=ghcr.io/noobping/steamamd:latest
 AutoUpdate=registry
-ContainerName=steam
 RunInit=true
 NoNewPrivileges=true
 SeccompProfile=unconfined

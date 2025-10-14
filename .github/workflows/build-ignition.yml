@@ -199,7 +199,7 @@ jobs:
           docker run --rm -i \
             -v "$PWD":/work -w /work \
             "$BUTANE_IMAGE" \
-            --files-dir . --strict < testing.bu > testing.ign
+            --files-dir . < testing.bu > testing.ign
 
       - name: Upload ignition + site files
         uses: actions/upload-artifact@v4

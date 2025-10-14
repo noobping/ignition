@@ -51,7 +51,9 @@ systemd:
 
         [Service]
         Type=oneshot
-        ExecStart=/usr/bin/systemctl enable --now cockpit.service libvirtd.socket virtqemud.socket
+        ExecStartPre=/usr/bin/systemctl enable --now libvirtd.socket
+        ExecStart=/usr/bin/systemctl enable --now virtqemud.socket
+        ExecStartPost=/usr/bin/systemctl enable --now cockpit.service
 
         [Install]
         WantedBy=multi-user.target

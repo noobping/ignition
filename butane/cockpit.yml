@@ -9,19 +9,20 @@ storage:
         local: ./containers/cockpit.container
     - path: /etc/polkit-1/rules.d/50-libvirt-remote-access.rules
       mode: 0644
-      contents: |
-        polkit.addRule(function(action, subject) {
-          if (action.id == "org.libvirt.unix.manage" && subject.isInGroup("wheel")) {
-            return polkit.Result.YES;
-          }
-        });
+      contents:
+        inline: |
+          polkit.addRule(function(action, subject) {
+            if (action.id == "org.libvirt.unix.manage" && subject.isInGroup("wheel")) {
+              return polkit.Result.YES;
+            }
+          });
 
 systemd:
   units:
     - name: cockpit.service
       enabled: false
 
-    - name: install-packages.service
+    - name: install-cockpit.service
       enabled: true
       contents: |
         [Unit]
@@ -32,8 +33,25 @@ systemd:
 
         [Service]
         Type=oneshot
-        ExecStart=/usr/bin/rpm-ostree install cockpit-system cockpit-ostree cockpit-podman libvirt qemu-kvm cockpit-machines cockpit-storaged cockpit-files cockpit-networkmanager cockpit-sosreport cockpit-kdump cockpit-selinux
-        ExecStartPost=/usr/bin/systemctl enable cockpit.service libvirtd.socket virtqemud.socket
+        ExecStartPre=/usr/bin/rpm-ostree install cockpit-system cockpit-ostree cockpit-podman libvirt qemu-kvm cockpit-machines cockpit-storaged cockpit-files cockpit-networkmanager cockpit-sosreport cockpit-kdump cockpit-selinux
+        ExecStart=/usr/bin/systemctl enable enable-cockpit.service
+        ExecStartPost=/usr/bin/rpm-ostree rebase --reboot fedora:fedora/x86_64/coreos/stable
+
+        [Install]
+        WantedBy=multi-user.target
+
+    - name: enable-cockpit.service
+      enabled: false
+      contents: |
+        [Unit]
+        Description=Enable cockpit service
+        Wants=network-online.target
+        After=network-online.target
+        ConditionFirstBoot=yes
+
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/bin/systemctl enable --now cockpit.service libvirtd.socket virtqemud.socket
 
         [Install]
         WantedBy=multi-user.target

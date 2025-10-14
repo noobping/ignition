@@ -166,6 +166,7 @@ jobs:
           set -euo pipefail
           yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/live.yml > live.bu
           yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/encrypted.yml > stable.bu
+          yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/encrypted.yml butane/cockpit.yml > next.bu
           yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/filesystems.yml butane/rebase.yml butane/containers.yml butane/steam.yml butane/cockpit.yml > testing.bu
 
       - name: Live ignition
@@ -183,6 +184,14 @@ jobs:
             -v "$PWD":/work -w /work \
             "$BUTANE_IMAGE" \
             --files-dir . --strict < stable.bu > stable.ign
+      
+      - name: Next ignition
+        run: |
+          set -euo pipefail
+          docker run --rm -i \
+            -v "$PWD":/work -w /work \
+            "$BUTANE_IMAGE" \
+            --files-dir . --strict < next.bu > next.ign
 
       - name: Testing ignition
         run: |
@@ -387,7 +396,7 @@ jobs:
       fail-fast: false
       matrix:
         arch: [x86_64, aarch64]
-        profile: [stable, testing]
+        profile: [stable, next, testing]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -481,21 +490,27 @@ jobs:
 
           # Look up each artifact id
           AARCH64_STABLE_ID="$(art_id 'fedora-coreos-aarch64-stable.iso')"
+          AARCH64_NEXT_ID="$(art_id 'fedora-coreos-aarch64-next.iso')"
           AARCH64_TESTING_ID="$(art_id 'fedora-coreos-aarch64-testing.iso')"
           X86_64_STABLE_ID="$(art_id 'fedora-coreos-x86_64-stable.iso')"
+          X86_64_NEXT_ID="$(art_id 'fedora-coreos-x86_64-next.iso')"
           X86_64_TESTING_ID="$(art_id 'fedora-coreos-x86_64-testing.iso')"
 
           base="https://github.com/$owner_repo/actions/runs/$run_id/artifacts"
           AARCH64_STABLE_URL="$base/$AARCH64_STABLE_ID"
+          AARCH64_NEXT_URL="$base/$AARCH64_NEXT_ID"
           AARCH64_TESTING_URL="$base/$AARCH64_TESTING_ID"
           X86_64_STABLE_URL="$base/$X86_64_STABLE_ID"
+          X86_64_NEXT_URL="$base/$X86_64_NEXT_ID"
           X86_64_TESTING_URL="$base/$X86_64_TESTING_ID"
 
           # Expose as outputs
           {
             echo "aarch64_stable=$AARCH64_STABLE_URL"
+            echo "aarch64_next=$AARCH64_NEXT_URL"
             echo "aarch64_testing=$AARCH64_TESTING_URL"
             echo "x86_64_stable=$X86_64_STABLE_URL"
+            echo "x86_64_next=$X86_64_NEXT_URL"
             echo "x86_64_testing=$X86_64_TESTING_URL"
           } >> "$GITHUB_OUTPUT"
 
@@ -510,8 +525,10 @@ jobs:
 
           # Inject artifact links from the current run
           sed -i "s|__FCOS_AARCH64_STABLE__|${{ steps.artifacts.outputs.aarch64_stable }}|g"   dist/index.html
+          sed -i "s|__FCOS_AARCH64_NEXT__|${{ steps.artifacts.outputs.aarch64_next }}|g" dist/index.html
           sed -i "s|__FCOS_AARCH64_TESTING__|${{ steps.artifacts.outputs.aarch64_testing }}|g" dist/index.html
           sed -i "s|__FCOS_X86_64_STABLE__|${{ steps.artifacts.outputs.x86_64_stable }}|g"     dist/index.html
+          sed -i "s|__FCOS_X86_64_NEXT__|${{ steps.artifacts.outputs.x86_64_next }}|g"   dist/index.html
           sed -i "s|__FCOS_X86_64_TESTING__|${{ steps.artifacts.outputs.x86_64_testing }}|g"   dist/index.html
 
       - run: tree

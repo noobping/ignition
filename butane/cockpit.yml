@@ -3,6 +3,16 @@ version: 1.6.0
 
 storage:
   files:
+    - path: /etc/ssh/sshd_config.d/40-disable-passwords.conf
+      mode: 0644
+      overwrite: true
+      contents:
+        inline: |
+          # Disable password logins by default.
+          # https://github.com/coreos/fedora-coreos-tracker/issues/138
+          # This file must sort before 50-redhat.conf, which enables
+          # PasswordAuthentication.
+          PasswordAuthentication yes
     - path: /etc/containers/systemd/cockpit.container
       mode: 0644
       contents:

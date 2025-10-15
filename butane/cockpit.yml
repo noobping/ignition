@@ -42,7 +42,7 @@ systemd:
 
         [Service]
         Type=oneshot
-        ExecStart=/usr/bin/sh -c "systemctl list-unit-files --type=socket | awk '/virt/ {print \$1}' | xargs -r systemctl enable --now"
+        ExecStart=/usr/bin/systemctl enable --now libvirtd
         ExecStartPost=/usr/bin/systemctl disable enable-virtualization.service
 
         [Install]

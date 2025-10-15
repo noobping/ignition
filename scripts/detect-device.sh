@@ -3,8 +3,7 @@ set -euo pipefail
 
 detect_dest() {
     local dev smallest
-    smallest=$(lsblk -dn -o NAME,SIZE,TYPE | awk '$3 == "disk" {print "/dev/" $1, $2}' | \
-        sort -h -k2,2 | head -n1 | awk '{print $1}')
+    smallest=$(lsblk -dn -o NAME,SIZE,TYPE,TRAN,RM | awk '$3 == "disk" && $4 != "usb" && $5 == 0 {print "/dev/" $1, $2}' | sort -h -k2,2 | head -n1 | awk '{print $1}')
     if [[ -b "$smallest" ]]; then
         echo "$smallest"
         return 0

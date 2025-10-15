@@ -2,12 +2,13 @@
 set -euo pipefail
 
 detect_dest() {
-    for dev in /dev/vd* /dev/nvme* /dev/sd*; do
-        if [[ -b "$dev" ]]; then
-            echo "$dev"
-            return 0
-        fi
-    done
+    local dev smallest
+    smallest=$(lsblk -dn -o NAME,SIZE,TYPE | awk '$3 == "disk" {print "/dev/" $1, $2}' | \
+        sort -h -k2,2 | head -n1 | awk '{print $1}')
+    if [[ -b "$smallest" ]]; then
+        echo "$smallest"
+        return 0
+    fi
     echo "error: unable to determine installation device" >&2
     return 1
 }

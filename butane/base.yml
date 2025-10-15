@@ -21,6 +21,11 @@ storage:
       group:
         name: nick
   files:
+    - path: /etc/hostname
+      mode: 0440
+      contents:
+        inline: |
+          fcos
     - path: /var/home/nick/.bashrc.d/git
       mode: 0755
       user:

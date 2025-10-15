@@ -77,7 +77,7 @@ systemd:
         [Service]
         Type=oneshot
         ExecStartPre=/usr/bin/rm /var/lib/coreos-container-signing-migration/failed.stamp
-        ExecStart=/usr/bin/rpm-ostree rebase fedora:fedora/x86_64/coreos/stable
+        ExecStart=/usr/bin/rpm-ostree rebase --bypass-driver fedora:fedora/x86_64/coreos/stable
 
         [Install]
         WantedBy=multi-user.target

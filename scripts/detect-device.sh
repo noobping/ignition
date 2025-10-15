@@ -2,7 +2,7 @@
 set -euo pipefail
 
 detect_dest() {
-    for dev in /dev/sd* /dev/vd* /dev/nvme*; do
+    for dev in /dev/vd* /dev/nvme* /dev/sd*; do
         if [[ -b "$dev" ]]; then
             echo "$dev"
             return 0

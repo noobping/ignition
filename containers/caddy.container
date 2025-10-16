@@ -1,0 +1,15 @@
+[Unit]
+Description=Podman - caddy web service
+
+[Container]
+Image=docker.io/library/caddy:latest
+AutoUpdate=registry
+ShmSize=7168b
+PodmanArgs=--network=host -v /etc/caddy.conf:/etc/caddy/Caddyfile:Z
+
+[Service]
+Restart=always
+TimeoutStartSec=900
+
+[Install]
+WantedBy=default.target

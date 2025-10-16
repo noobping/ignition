@@ -17,6 +17,25 @@ storage:
       mode: 0644
       contents:
         local: ./containers/cockpit.container
+    - path: /etc/containers/systemd/caddy.container
+      mode: 0644
+      contents:
+        local: ./containers/caddy.container
+    - path: /etc/caddy.conf
+      mode: 0644
+      contents:
+        inline: |
+          :443 {
+            redir https://{host}:9090{uri} permanent
+          }
+          :80 {
+            redir https://{host}:9090{uri} permanent
+          }
+
+    - path: /etc/nftables.conf
+      mode: 0644
+      contents:
+        local: ./configs/nftables.conf
     - path: /etc/polkit-1/rules.d/50-libvirt-remote-access.rules
       mode: 0644
       contents:
@@ -29,6 +48,8 @@ storage:
 
 systemd:
   units:
+    - name: nftables.service
+      enabled: true
     - name: podman-auto-update.timer
       enabled: true
     - name: cockpit.service

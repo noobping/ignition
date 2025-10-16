@@ -26,3 +26,11 @@ Build the ignition file from the butane file:
 ```sh
 podman run --rm -i -v "$PWD":/work:Z -w /work quay.io/coreos/butane:release --files-dir . --strict < butane/base.yml > fcos.ign
 ```
+
+## References
+
+These docs were useful for setup and configuration:
+
+- [Running Cockpit on Fedora CoreOS](https://cockpit-project.org/running.html#coreos) For deploying and accessing Cockpit.
+- [Butane Config (FCOS v1.6)](https://coreos.github.io/butane/config-fcos-v1_6/) For writing Fedora CoreOS configuration files.
+- [Cockpit Applications](https://cockpit-project.org/applications.html) Overview of available Cockpit apps and extensions.

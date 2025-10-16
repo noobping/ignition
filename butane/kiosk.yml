@@ -1,0 +1,41 @@
+variant: fcos
+version: 1.4.0
+
+storage:
+  files:
+    - path: /etc/systemd/system/kiosk-container.service
+      mode: 0644
+      contents: |
+        [Unit]
+        Description=Kiosk container
+        After=network-online.target
+        Wants=network-online.target
+
+        [Service]
+        Type=simple
+        Restart=always
+        RestartSec=5
+
+        ExecStart=/usr/bin/podman run --rm \
+          --name rdpkiosk \
+          --privileged \
+          --device /dev/dri \
+          --device /dev/input \
+          --security-opt label=disable \
+          --net host \
+          -e RDP_SERVER="${RDP_SERVER:-rdp.srv}" \
+          -e RDP_USER="${RDP_USER:-nick}" \
+          -e RDP_PASSWORD="${RDP_PASSWORD:-kiosk}" \
+          ghcr.io/noobping/rdpkiosk:latest
+
+        [Install]
+        WantedBy=multi-user.target
+
+systemd:
+  units:
+    - name: nftables.service
+      enabled: true
+    - name: podman-auto-update.timer
+      enabled: true
+    - name: kiosk-container.service
+      enabled: true

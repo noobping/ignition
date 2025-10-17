@@ -214,6 +214,7 @@ jobs:
 
   build-pxe:
     needs: generate-ignition
+    if: ${{ github.ref != 'refs/heads/develop' && github.ref != 'refs/heads/development' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -452,8 +453,8 @@ jobs:
           overwrite: true
 
   pages:
-    needs:
-      - build-iso-fcos
+    needs: build-iso-fcos
+    if: ${{ github.ref != 'refs/heads/develop' && github.ref != 'refs/heads/development' }}
     runs-on: ubuntu-latest
     permissions:
       pages: write

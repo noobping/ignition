@@ -1,0 +1,12 @@
+[Unit]
+Description=Bootstrap GNOME Remote Desktop (RDP) settings
+After=network.target dbus.service
+Wants=dbus.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/bootstrap-grd.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

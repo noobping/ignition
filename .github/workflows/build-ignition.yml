@@ -9,6 +9,8 @@ on:
     branches:
       - main
       - master
+      - develop
+      - development
     paths-ignore:
       - README.md
       - .gitignore

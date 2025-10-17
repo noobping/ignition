@@ -1,0 +1,104 @@
+variant: fcos
+version: 1.6.0
+
+passwd:
+  users:
+    - name: core
+      uid: 1000
+      groups: []
+
+storage:
+  files:
+    - path: /etc/hostname
+      mode: 0440
+      contents:
+        inline: |
+          fcos
+    - path: /etc/kiosk.env
+      mode: 0600
+      overwrite: true
+      contents:
+        inline: |
+          RDP_SERVER=gnome.rdp
+          RDP_USER=core
+          RDP_PASSWORD=fcos
+
+systemd:
+  units:
+    - name: nftables.service
+      enabled: true
+    - name: zincati.service
+      enabled: true
+
+    - name: set-timezone.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Set timezone to Europe/Amsterdam
+        After=network.target
+
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/bin/timedatectl set-timezone Europe/Amsterdam
+
+        [Install]
+        WantedBy=multi-user.target
+
+    - name: install-kiosk.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Install software packages via rpm-ostree
+        Wants=network-online.target
+        After=network-online.target
+        ConditionFirstBoot=yes
+
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/bin/rpm-ostree install --reboot cage freerdp
+        ExecStartPre=/usr/bin/systemctl disable install-kiosk.service
+
+        [Install]
+        WantedBy=multi-user.target
+
+    - name: kiosk.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Kiosk Wayland RDP session on %I
+        # Wait for users to be allowed to log in and the target TTY to exist
+        After=systemd-user-sessions.service
+        Wants=systemd-user-sessions.service
+        ConditionPathExists=/dev/%I
+
+        [Service]
+        # Run as the kiosk user so logind gives us a proper user session + seat
+        User=core
+        PAMName=login
+
+        # Bind to the real TTY so DRM/input gets routed correctly
+        TTYPath=/dev/%I
+        TTYReset=yes
+        TTYVHangup=yes
+        TTYVTDisallocate=yes
+        StandardInput=tty
+        StandardOutput=tty
+        StandardError=journal
+
+        # Pull RDP settings from a separate env file
+        EnvironmentFile=-/etc/rdp.env
+
+        # Make sure we have a sane runtime dir (normally provided by logind)
+        Environment=XDG_RUNTIME_DIR=/run/user/1000
+
+        # Start the single-app Wayland compositor (cage),
+        # launching wlfreerdp fullscreen into the RDP host.
+        ExecStart=/usr/bin/cage /usr/bin/wlfreerdp \
+          /u:${RDP_USER} /p:${RDP_PASSWORD} /v:${RDP_SERVER} \
+          /f ${RDP_EXTRA}
+
+        Restart=on-failure
+        RestartSec=3
+
+        [Install]
+        WantedBy=multi-user.target

@@ -167,6 +167,7 @@ jobs:
           yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/live.yml > live.bu
           yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/encrypted.yml butane/cockpit.yml > stable.bu
           yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/filesystems.yml butane/cockpit.yml butane/rebase.yml butane/containers.yml butane/steam.yml > testing.bu
+          yq ea '. as $item ireduce ({}; . *+ $item)' butane/encrypted.yml butane/kiosk.yml > kiosk.bu
 
       - name: Live ignition
         run: |
@@ -191,6 +192,14 @@ jobs:
             -v "$PWD":/work -w /work \
             "$BUTANE_IMAGE" \
             --files-dir . --strict < testing.bu > testing.ign
+
+      - name: Kiosk ignition
+        run: |
+          set -euo pipefail
+          docker run --rm -i \
+            -v "$PWD":/work -w /work \
+            "$BUTANE_IMAGE" \
+            --files-dir . --strict < kiosk.bu > kiosk.ign
 
       - name: Upload ignition + site files
         uses: actions/upload-artifact@v4
@@ -387,7 +396,7 @@ jobs:
       fail-fast: false
       matrix:
         arch: [x86_64, aarch64]
-        profile: [stable, testing]
+        profile: [stable, testing, kiosk]
     steps:
       - name: Checkout
         uses: actions/checkout@v4

@@ -87,7 +87,7 @@ systemd:
         WantedBy=multi-user.target
 
     - name: nightly-shutdown.service
-      enabled: false
+      enabled: true
       contents: |
         [Unit]
         Description=Power off the system at 21:30
@@ -95,20 +95,7 @@ systemd:
 
         [Service]
         Type=oneshot
-        ExecStart=/usr/sbin/poweroff
+        ExecStart=/usr/sbin/shutdown -h 21:30
 
         [Install]
         WantedBy=multi-user.target
-
-    - name: nightly-shutdown.timer
-      enabled: true
-      contents: |
-        [Unit]
-        Description=Timer to power off system at 21:30 daily
-
-        [Timer]
-        OnCalendar=*-*-* 21:30:00
-        Persistent=true
-
-        [Install]
-        WantedBy=timers.target

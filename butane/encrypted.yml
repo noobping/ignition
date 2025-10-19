@@ -3,31 +3,3 @@ version: 1.6.0
 boot_device: 
   luks: 
     tpm2: true
-systemd:
-  units:
-    - name: nightly-shutdown.service
-      enabled: false
-      contents: |
-        [Unit]
-        Description=Power off the system at 21:30
-        After=network.target
-
-        [Service]
-        Type=oneshot
-        ExecStart=/usr/sbin/poweroff
-
-        [Install]
-        WantedBy=multi-user.target
-
-    - name: nightly-shutdown.timer
-      enabled: true
-      contents: |
-        [Unit]
-        Description=Timer to power off system at 21:30 daily
-
-        [Timer]
-        OnCalendar=*-*-* 21:30:00
-        Persistent=true
-
-        [Install]
-        WantedBy=timers.target

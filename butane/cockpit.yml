@@ -85,3 +85,17 @@ systemd:
 
         [Install]
         WantedBy=multi-user.target
+
+    - name: nightly-shutdown.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Power off the system at 21:30
+        After=network.target
+
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/sbin/shutdown -h 21:30
+
+        [Install]
+        WantedBy=multi-user.target

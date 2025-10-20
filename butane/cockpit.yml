@@ -99,3 +99,17 @@ systemd:
 
         [Install]
         WantedBy=multi-user.target
+
+    - name: wake-on-lan.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Power on the system (just once after shutdown)
+        After=network.target
+
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/sbin/sh -c 'dev=$(ip -br link | awk '\''$2=="UP" && $1!="lo" {print $1; exit}'\''); if [ -n "$dev" ]; then ethtool -s "$dev" wol g && echo "WOL enabled on $dev"; fi'
+
+        [Install]
+        WantedBy=multi-user.target

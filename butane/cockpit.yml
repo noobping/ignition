@@ -105,7 +105,8 @@ systemd:
       contents: |
         [Unit]
         Description=Power on the system (just once after shutdown)
-        After=network.target
+        Wants=network-online.target
+        After=network-online.target
 
         [Service]
         Type=oneshot

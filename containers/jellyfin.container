@@ -1,5 +1,7 @@
 [Unit]
 Description=Podman - Jellyfin streaming service
+ConditionPathExists=/var/apps/jellyfin
+ConditionPathExists=/var/music
 
 [Container]
 Image=ghcr.io/jellyfin/jellyfin:latest

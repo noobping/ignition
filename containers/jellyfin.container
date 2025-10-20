@@ -1,30 +1,13 @@
 [Unit]
-Description=Podman - Jellyfin
+Description=Podman - Jellyfin streaming service
 
 [Container]
 Image=ghcr.io/jellyfin/jellyfin:latest
 AutoUpdate=registry
-Environment=PUID=1000
-Environment=PGID=1000
-Environment=TZ=Europe/Amsterdam
-Volume=/var/srv/cold/books:/books
-Volume=/var/srv/cold/music/sounds
-Volume=/var/srv/cold/music/touhou
-Volume=/var/srv/cold/pictures
-Volume=/var/srv/cold/tv
-Volume=/var/srv/cold/videos
-Volume=/var/srv/hot/config/jellyfin:/config
-Volume=/var/srv/hot/music/cds
-Volume=/var/srv/hot/music/jpop
-Volume=/var/srv/hot/music/ost/anime
-Volume=/var/srv/hot/music/ost/games
-Volume=/var/srv/hot/music/ost/movies
-PublishPort=8096:8096
-PublishPort=8920:8920
-PublishPort=7359:7359/udp
-PublishPort=1900:1900/udp
+PodmanArgs=-p 8096:8096 -p 8920:8920 -p 7359:7359/udp -p 1900:1900/udp -v /var/srv/fast/apps/jellyfin:/config:Z -v /var/srv/fast/music:/music:Z -v /var/srv/fast/books:/books:Z
 
 [Service]
+User=nick
 Restart=always
 TimeoutStartSec=900
 

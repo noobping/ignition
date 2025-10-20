@@ -1,24 +1,19 @@
 [Unit]
 Description=Podman - Nextcloud service
-Wants=network-online.target nextcloud-mysql.service
-After=network-online.target nextcloud-mysql.service
 Requires=mysql.service
+ConditionPathExists=/var/apps/nextcloud
 
 [Container]
-Image=nextcloud:apache
-# Reuse DB settings + set trusted domains in the same env file
-EnvironmentFile=/etc/nextcloud/mysql.env
-# Persist app + data (Nextcloud stores data under /var/www/html/data by default)
-Volume=/var/lib/nextcloud/app:/var/www/html:Z
-# Serve on host :8080  -> container :80
-PublishPort=8080:80
-Network=podman
-# Optional: make logs easy to read with journalctl
+Image=docker.io/library/nextcloud:latest
+AutoUpdate=registry
+EnvironmentFile=/var/apps/nextcloud.env
+PodmanArgs=-p 8080:8080 -v /var/apps/nextcloud:/var/www/html:Z
 Label=io.containers.autoupdate=image
 
 [Service]
+User=nick
 Restart=always
-TimeoutStartSec=0
+TimeoutStartSec=900
 
 [Install]
 WantedBy=default.target

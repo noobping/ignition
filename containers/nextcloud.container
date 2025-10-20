@@ -1,20 +1,24 @@
 [Unit]
-Description=Podman - Nextcloud All-in-One
+Description=Podman - Nextcloud service
+Wants=network-online.target nextcloud-mysql.service
+After=network-online.target nextcloud-mysql.service
+Requires=mysql.service
 
 [Container]
-Image=ghcr.io/nextcloud-releases/all-in-one:latest
-AutoUpdate=registry
-RunInit=true
-PodmanArgs=--sig-proxy=false
-PublishPort=80:80
-PublishPort=8080:8080
-PublishPort=8443:8443
-Volume=nextcloud_aio_mastercontainer:/mnt/docker-aio-config
-Volume=/run/podman/podman.sock:/var/run/docker.sock:Z
+Image=nextcloud:apache
+# Reuse DB settings + set trusted domains in the same env file
+EnvironmentFile=/etc/nextcloud/mysql.env
+# Persist app + data (Nextcloud stores data under /var/www/html/data by default)
+Volume=/var/lib/nextcloud/app:/var/www/html:Z
+# Serve on host :8080  -> container :80
+PublishPort=8080:80
+Network=podman
+# Optional: make logs easy to read with journalctl
+Label=io.containers.autoupdate=image
 
 [Service]
 Restart=always
-TimeoutStartSec=900
+TimeoutStartSec=0
 
 [Install]
 WantedBy=default.target

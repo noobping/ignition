@@ -1,0 +1,24 @@
+[Unit]
+Description=Podman - MySQL service
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+Image=mysql:8.0
+# Keep creds out of the unit
+EnvironmentFile=/etc/nextcloud/mysql.env
+# Persist data
+Volume=/var/lib/nextcloud/mysql:/var/lib/mysql:Z
+# Only expose locally; remove the IP to expose on all interfaces
+PublishPort=127.0.0.1:3306:3306
+# Stay on the default podman network so name-based DNS works
+Network=podman
+# Health-ish: let it start properly on first init
+StopTimeout=120
+
+[Service]
+Restart=always
+TimeoutStartSec=0
+
+[Install]
+WantedBy=default.target

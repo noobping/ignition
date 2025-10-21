@@ -1,10 +1,13 @@
 [Unit]
 Description=Podman - Jellyfin streaming service
+ConditionPathExists=/var/apps/jellyfin
+ConditionPathExists=/var/apps/jellyfin/cache
+ConditionPathExists=/var/music
 
 [Container]
 Image=ghcr.io/jellyfin/jellyfin:latest
 AutoUpdate=registry
-PodmanArgs=-p 8096:8096 -p 8920:8920 -p 7359:7359/udp -p 1900:1900/udp -v /var/srv/fast/apps/jellyfin:/config:Z -v /var/srv/fast/music:/music:Z -v /var/srv/fast/books:/books:Z
+PodmanArgs=-p 8096:8096 -p 8920:8920 -p 7359:7359/udp -p 1900:1900/udp -v /var/apps/jellyfin:/config:Z -v /var/apps/jellyfin/cache:/cache:Z -v /var/music:/music:Z -v /var/books:/books:Z
 
 [Service]
 User=nick

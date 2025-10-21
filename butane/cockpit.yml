@@ -46,6 +46,10 @@ storage:
             }
           });
 
+    - path: /etc/containers/systemd/jellyfin.container
+      mode: 0644
+      contents:
+        local: ./containers/jellyfin.container
 systemd:
   units:
     - name: nftables.service
@@ -80,7 +84,7 @@ systemd:
 
         [Service]
         Type=oneshot
-        ExecStart=/usr/bin/rpm-ostree install --reboot cockpit-system cockpit-ostree cockpit-podman libvirt qemu-kvm cockpit-machines cockpit-storaged cockpit-files cockpit-networkmanager cockpit-sosreport cockpit-kdump cockpit-selinux pcp
+        ExecStart=/usr/bin/rpm-ostree install --reboot cockpit-system cockpit-ostree cockpit-podman libvirt qemu-kvm cockpit-machines cockpit-storaged cockpit-files cockpit-networkmanager cockpit-sosreport cockpit-kdump cockpit-selinux pcp-zeroconf
         ExecStartPre=/usr/bin/systemctl disable install-cockpit.service
 
         [Install]
@@ -105,7 +109,8 @@ systemd:
       contents: |
         [Unit]
         Description=Power on the system (just once after shutdown)
-        After=network.target
+        Wants=network-online.target
+        After=network-online.target
 
         [Service]
         Type=oneshot
@@ -113,3 +118,17 @@ systemd:
 
         [Install]
         WantedBy=multi-user.target
+
+    - name: wake-on-alarm.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Set wakeup alarm for next boot
+        Before=poweroff.target halt.target reboot.target
+
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/bin/rtcwake -m no -t $(date +%s -d 'tomorrow 10:00')
+
+        [Install]
+        WantedBy=poweroff.target halt.target reboot.target

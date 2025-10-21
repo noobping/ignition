@@ -6,6 +6,14 @@ passwd:
     - name: core
       should_exist: false
 
+storage:
+  files:
+    - path: /etc/hostname
+      mode: 0440
+      contents:
+        inline: |
+          fcos
+
 systemd:
   units:
     - name: zincati.service

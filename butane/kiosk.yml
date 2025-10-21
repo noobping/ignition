@@ -3,7 +3,7 @@ version: 1.6.0
 
 passwd:
   users:
-    - name: core
+    - name: guest
       uid: 1000
       groups: []
 
@@ -20,7 +20,7 @@ storage:
       contents:
         inline: |
           RDP_SERVER=gnome.rdp
-          RDP_USER=core
+          RDP_USER=guest
           RDP_PASSWORD=fcos
 
 systemd:
@@ -73,7 +73,7 @@ systemd:
 
         [Service]
         # Run as the kiosk user so logind gives us a proper user session + seat
-        User=core
+        User=guest
         PAMName=login
 
         # Bind to the real TTY so DRM/input gets routed correctly

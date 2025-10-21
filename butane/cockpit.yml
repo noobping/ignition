@@ -57,10 +57,6 @@ storage:
         local: ./containers/nextcloud.container
 systemd:
   units:
-    - name: nftables.service
-      enabled: true
-    - name: podman-auto-update.timer
-      enabled: true
     - name: cockpit.service
       enabled: false
 

@@ -9,11 +9,6 @@ passwd:
 
 storage:
   files:
-    - path: /etc/hostname
-      mode: 0440
-      contents:
-        inline: |
-          fcos
     - path: /etc/kiosk.env
       mode: 0600
       overwrite: true

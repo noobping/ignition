@@ -7,7 +7,7 @@ ConditionPathExists=/var/apps/nextcloud
 Image=docker.io/library/nextcloud:latest
 AutoUpdate=registry
 EnvironmentFile=/var/apps/nextcloud.env
-PodmanArgs=-p 8080:8080 -v /var/apps/nextcloud:/var/www/html:Z
+PodmanArgs=-p 8080:80 -v /var/apps/nextcloud:/var/www/html:Z
 Label=io.containers.autoupdate=image
 
 [Service]

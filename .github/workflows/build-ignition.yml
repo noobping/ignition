@@ -270,6 +270,7 @@ jobs:
             -v "$PWD":/work -w /work "$INSTALLER_IMAGE" \
             pxe customize \
               --live-ignition live.ign \
+              --dest-ignition stable.ign --pre-install scripts/detect-device.sh
               -o "${OUT_INITRAMFS}" \
               "$(basename "$INITRAMFS")"
 

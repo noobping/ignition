@@ -3,6 +3,11 @@ version: 1.6.0
 
 storage:
   files:
+    - path: /usr/local/sbin/detect-device.sh
+      mode: 0755
+      contents:
+        local: ./scripts/detect-device.sh
+
     - path: /etc/ssh/sshd_config.d/40-disable-passwords.conf
       mode: 0644
       overwrite: true

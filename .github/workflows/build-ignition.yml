@@ -166,7 +166,7 @@ jobs:
       - name: Profiles
         run: |
           set -euo pipefail
-          yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/ssh.yml butane/live.yml > live.bu
+          yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/live.yml > live.bu
           yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/ssh.yml butane/encrypted.yml butane/cockpit.yml > stable.bu
 
       - name: Live ignition

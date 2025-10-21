@@ -124,7 +124,7 @@ systemd:
         [Install]
         WantedBy=multi-user.target
 
-    - name: set-wake-alarm.service
+    - name: wake-on-alarm.service
       enabled: true
       contents: |
         [Unit]

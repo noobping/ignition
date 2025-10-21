@@ -35,14 +35,6 @@ storage:
         name: nick
       contents:
         local: ./aliases/pass
-    - path: /var/home/nick/.bashrc.d/zola
-      mode: 0755
-      user:
-        name: nick
-      group:
-        name: nick
-      contents:
-        local: ./aliases/zola
     - path: /etc/sudoers.d/nick
       mode: 0440
       contents:
@@ -51,14 +43,5 @@ storage:
 
 systemd:
   units:
-    - name: getty@tty1.service
-      enabled: true
-      dropins:
-        - name: override.conf
-          contents: |
-            [Service]
-            ExecStart=
-            ExecStart=-/sbin/agetty --autologin nick --noclear %I $TERM
-
     - name: sshd.service
       enabled: true

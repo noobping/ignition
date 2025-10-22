@@ -11,6 +11,10 @@ storage:
       mode: 0755
       contents:
         local: ./scripts/todo.sh
+    - path: /usr/local/sbin/add-mirrors.sh
+      mode: 0755
+      contents:
+        local: ./scripts/mirrors.sh
 
     - path: /etc/ssh/sshd_config.d/40-disable-passwords.conf
       mode: 0644
@@ -92,6 +96,23 @@ systemd:
         [Install]
         WantedBy=multi-user.target
 
+    - name: add-mirrors.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Add OStree mirrors
+        Wants=network-online.target
+        After=network-online.target
+        Before=install-cockpit.service
+        ConditionFirstBoot=yes
+
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/local/sbin/add-mirrors.sh
+
+        [Install]
+        WantedBy=multi-user.target
+
     - name: install-cockpit.service
       enabled: true
       contents: |
@@ -99,7 +120,6 @@ systemd:
         Description=Install software packages via rpm-ostree
         Wants=network-online.target
         After=network-online.target
-        ConditionFirstBoot=yes
 
         [Service]
         Type=oneshot

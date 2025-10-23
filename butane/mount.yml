@@ -2,6 +2,12 @@ variant: fcos
 version: 1.6.0
 
 storage:
+  filesystems:
+    - path: /var/srv/fast
+      device: /dev/disk/by-label/fast
+      with_mount_unit: true
+      format: btrfs
+      options: ["nofail"]
   directories:
     - path: /var/srv/fast
       mode: 0755
@@ -28,24 +34,6 @@ storage:
     - path: /var/snapshots
       mode: 0755
 systemd:
-  units:
-    - name: var-srv-fast.mount
-      enabled: true
-      contents: |
-        [Unit]
-        Description=Btrfs Subvolume / (Fast Storage Root)
-        Wants=local-fs.target
-        DefaultDependencies=no
-        
-        [Mount]
-        What=/dev/disk/by-label/fast
-        Where=/var/srv/fast
-        Type=btrfs
-        Options=nofail,subvol=/,x-parent=/dev/md127,x-parent=/dev/md/raid0
-        
-        [Install]
-        WantedBy=local-fs.target
-    
     - name: var-music.mount
       enabled: true
       contents: |

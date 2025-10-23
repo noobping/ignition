@@ -1,0 +1,11 @@
+variant: fcos
+version: 1.6.0
+storage:
+  filesystems:
+    - path: /var/music
+      device: /dev/disk/by-label/fast
+      format: btrfs
+      wipe_filesystem: false
+      options:
+        - subvol=@music
+      with_mount_unit: true

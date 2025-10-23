@@ -4,7 +4,7 @@ version: 1.6.0
 passwd:
   users:
     - name: guest
-      uid: 1000
+      uid: 1001
       groups: []
 
 storage:
@@ -65,7 +65,7 @@ systemd:
         EnvironmentFile=-/etc/rdp.env
 
         # Make sure we have a sane runtime dir (normally provided by logind)
-        Environment=XDG_RUNTIME_DIR=/run/user/1000
+        Environment=XDG_RUNTIME_DIR=/run/user/1001
 
         # Start the single-app Wayland compositor (cage),
         # launching wlfreerdp fullscreen into the RDP host.

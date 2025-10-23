@@ -9,12 +9,12 @@ passwd:
       shell: /usr/bin/nologin
       groups: [apps]
     - name: docs
-      uid: 1011
+      uid: 1012
       home_dir: /var/docs
       shell: /usr/bin/nologin
       groups: [apps]
     - name: music
-      uid: 1014
+      uid: 1013
       home_dir: /var/music
       shell: /usr/bin/nologin
       groups: [apps]

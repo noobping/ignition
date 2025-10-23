@@ -13,7 +13,7 @@ AutoUpdate=registry
 PodmanArgs=-p 8096:8096 -p 8920:8920 -p 7359:7359/udp -p 1900:1900/udp -v /var/apps/jellyfin:/config:Z -v /var/apps/jellyfin/cache:/cache:Z -v /var/music:/music:Z -v /var/books:/books:Z
 
 [Service]
-User=nick
+User=music
 Restart=always
 TimeoutStartSec=900
 

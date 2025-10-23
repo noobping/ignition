@@ -2,7 +2,7 @@ variant: fcos
 version: 1.6.0
 storage:
   filesystems:
-    - path: /mnt/fast
+    - path: /var/srv/fast
       device: /dev/disk/by-label/fast
       format: btrfs
       wipe_filesystem: false

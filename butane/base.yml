@@ -41,3 +41,6 @@ systemd:
 
         [Install]
         WantedBy=multi-user.target
+
+    - name: systemd-timesyncd.service
+      enabled: true

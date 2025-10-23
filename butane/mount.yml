@@ -2,40 +2,38 @@ variant: fcos
 version: 1.6.0
 
 storage:
-  # We’re mounting an existing Btrfs by LABEL=fast; do NOT set `format:` to avoid reformatting.
   filesystems:
     - label: fast
       path: /var/srv/fast
-      mount_options: ["subvol=/"]
+      mount_options: ["subvol=/", "x-systemd.device-timeout=1s", "x-systemd.automount"]
     - label: fast
       path: /var/music
-      mount_options: ["subvol=music"]
+      mount_options: ["subvol=music", "x-systemd.device-timeout=1s", "x-systemd.automount"]
     - label: fast
       path: /var/apps
-      mount_options: ["subvol=apps"]
+      mount_options: ["subvol=apps", "x-systemd.device-timeout=1s", "x-systemd.automount"]
     - label: fast
       path: /var/git
-      mount_options: ["subvol=git"]
+      mount_options: ["subvol=git", "x-systemd.device-timeout=1s", "x-systemd.automount"]
     - label: fast
       path: /var/music/touhou
-      mount_options: ["subvol=touhou"]
+      mount_options: ["subvol=touhou", "x-systemd.device-timeout=1s", "x-systemd.automount"]
     - label: fast
       path: /var/books
-      mount_options: ["subvol=books"]
+      mount_options: ["subvol=books", "x-systemd.device-timeout=1s", "x-systemd.automount"]
     - label: fast
       path: /var/docs
-      mount_options: ["subvol=docs"]
+      mount_options: ["subvol=docs", "x-systemd.device-timeout=1s", "x-systemd.automount"]
     - label: fast
       path: /var/photos
-      mount_options: ["subvol=photos"]
+      mount_options: ["subvol=photos", "x-systemd.device-timeout=1s", "x-systemd.automount"]
     - label: fast
       path: /var/videos
-      mount_options: ["subvol=videos"]
+      mount_options: ["subvol=videos", "x-systemd.device-timeout=1s", "x-systemd.automount"]
     - label: fast
       path: /var/snapshots
-      mount_options: ["subvol=snapshots"]
+      mount_options: ["subvol=snapshots", "x-systemd.device-timeout=1s", "x-systemd.automount"]
 
-  # Optional but nice: pre-create mountpoints so first boot logs stay quiet.
   directories:
     - { path: /var/srv/fast, mode: 0755 }
     - { path: /var/music, mode: 0755 }

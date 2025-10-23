@@ -2,46 +2,27 @@ variant: fcos
 version: 1.6.0
 
 storage:
-  filesystems:
-    - label: fast
-      path: /var/srv/fast
-      mount_options: ["subvol=/", "x-systemd.device-timeout=1s", "x-systemd.automount"]
-    - label: fast
-      path: /var/music
-      mount_options: ["subvol=music", "x-systemd.device-timeout=1s", "x-systemd.automount"]
-    - label: fast
-      path: /var/apps
-      mount_options: ["subvol=apps", "x-systemd.device-timeout=1s", "x-systemd.automount"]
-    - label: fast
-      path: /var/git
-      mount_options: ["subvol=git", "x-systemd.device-timeout=1s", "x-systemd.automount"]
-    - label: fast
-      path: /var/music/touhou
-      mount_options: ["subvol=touhou", "x-systemd.device-timeout=1s", "x-systemd.automount"]
-    - label: fast
-      path: /var/books
-      mount_options: ["subvol=books", "x-systemd.device-timeout=1s", "x-systemd.automount"]
-    - label: fast
-      path: /var/docs
-      mount_options: ["subvol=docs", "x-systemd.device-timeout=1s", "x-systemd.automount"]
-    - label: fast
-      path: /var/photos
-      mount_options: ["subvol=photos", "x-systemd.device-timeout=1s", "x-systemd.automount"]
-    - label: fast
-      path: /var/videos
-      mount_options: ["subvol=videos", "x-systemd.device-timeout=1s", "x-systemd.automount"]
-    - label: fast
-      path: /var/snapshots
-      mount_options: ["subvol=snapshots", "x-systemd.device-timeout=1s", "x-systemd.automount"]
+  files:
+    - path: /usr/local/bin/mount-fast-subvols.sh
+      mode: 0755
+      contents:
+        local: scripts/mount-fast.sh
 
-  directories:
-    - { path: /var/srv/fast, mode: 0755 }
-    - { path: /var/music, mode: 0755 }
-    - { path: /var/apps, mode: 0755 }
-    - { path: /var/git, mode: 0755 }
-    - { path: /var/music/touhou, mode: 0755 }
-    - { path: /var/books, mode: 0755 }
-    - { path: /var/docs, mode: 0755 }
-    - { path: /var/photos, mode: 0755 }
-    - { path: /var/videos, mode: 0755 }
-    - { path: /var/snapshots, mode: 0755 }
+systemd:
+  units:
+    - name: mount-fast-subvols.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Mount Btrfs subvolumes from /dev/disk/by-label/fast
+        Wants=local-fs.target
+        Before=local-fs.target
+        ConditionPathExists=/dev/disk/by-label/fast
+
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/local/bin/mount-fast-subvols.sh
+        RemainAfterExit=yes
+
+        [Install]
+        WantedBy=local-fs.target

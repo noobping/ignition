@@ -9,3 +9,27 @@ storage:
       options:
         - subvol=@music
       with_mount_unit: true
+
+    - path: /var/music/touhou
+      device: /dev/disk/by-label/fast
+      format: btrfs
+      wipe_filesystem: false
+      options:
+        - subvol=@touhou
+      with_mount_unit: true
+
+    - path: /var/apps
+      device: /dev/disk/by-label/fast
+      format: btrfs
+      wipe_filesystem: false
+      options:
+        - subvol=@apps
+      with_mount_unit: true
+
+    - path: /var/git
+      device: /dev/disk/by-label/fast
+      format: btrfs
+      wipe_filesystem: false
+      options:
+        - subvol=@git
+      with_mount_unit: true

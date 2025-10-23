@@ -7,7 +7,6 @@ passwd:
       uid: 1011
       home_dir: /var/apps
       shell: /usr/bin/nologin
-      groups: [apps]
     - name: docs
       uid: 1012
       home_dir: /var/docs

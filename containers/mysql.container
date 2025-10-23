@@ -1,5 +1,8 @@
 [Unit]
 Description=Podman - MySQL service
+After=local-fs.target
+Requires=local-fs.target
+RequiresMountsFor=/var/apps/mysql
 ConditionPathExists=/var/apps/mysql
 
 [Container]

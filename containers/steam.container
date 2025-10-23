@@ -1,5 +1,8 @@
 [Unit]
 Description=Podman - Steam Remote Play
+After=local-fs.target
+Requires=local-fs.target
+RequiresMountsFor=/var/apps/steam
 ConditionPathExists=/var/apps/steam/data
 ConditionPathExists=/var/apps/steam/local
 

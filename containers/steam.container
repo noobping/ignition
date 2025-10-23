@@ -21,9 +21,7 @@ PublishPort=27031-27036:27031-27036/udp
 PublishPort=27036:27036/tcp
 
 [Service]
-User=player
-Restart=always
-TimeoutStartSec=900
+User=apps
 
 [Install]
 WantedBy=multi-user.target

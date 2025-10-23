@@ -3,18 +3,26 @@ version: 1.6.0
 
 passwd:
   users:
+    - name: apps
+      uid: 1011
+      home_dir: /var/apps
+      shell: /usr/bin/nologin
+      groups: [apps]
     - name: docs
       uid: 1011
       home_dir: /var/docs
       shell: /usr/bin/nologin
+      groups: [apps]
     - name: music
       uid: 1014
       home_dir: /var/music
       shell: /usr/bin/nologin
+      groups: [apps]
     - name: git
       uid: 1014
       home_dir: /var/git
       shell: /usr/bin/nologin
+      groups: [apps]
     - name: nick
       uid: 1000
       groups: 
@@ -22,6 +30,7 @@ passwd:
         - git
         - docs
         - music
+        - apps
       ssh_authorized_keys:
         - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEjRfPMkXzhO4unF0mEOHge+wGAE9VarXYo7RRXX2L3j
         - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBgtZmKuTJY2z88tCrtexFTPmXGA6oR1m4XQVn8ZLzmj

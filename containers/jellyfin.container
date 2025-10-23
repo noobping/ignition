@@ -1,5 +1,8 @@
 [Unit]
 Description=Podman - Jellyfin streaming service
+After=local-fs.target
+Requires=local-fs.target
+RequiresMountsFor=/var/apps/jellyfin /var/apps/jellyfin/cache /var/music /var/books
 ConditionPathExists=/var/apps/jellyfin
 ConditionPathExists=/var/apps/jellyfin/cache
 ConditionPathExists=/var/music

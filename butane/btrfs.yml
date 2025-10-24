@@ -3,39 +3,33 @@ version: 1.6.0
 storage:
   directories:
     - path: /var/srv/fast
-    - path: /var/games/minecraft/bedrock
-    - path: /var/games/minecraft/java
-    - path: /var/music/touhou
-  # filesystems:
-  #   - path: /var/srv/fast
-  #     device: /dev/disk/by-label/fast
-  #     format: btrfs
-  #     wipe_filesystem: false
-  #     with_mount_unit: true
-  #     options: ["nofail"]
 
 systemd:
   units:
     - name: mnt-fast.mount
-      enabled: true
+      enabled: false
       contents: |
         [Unit]
-        Description=Detect ssds and mount if present
+        Description=Detect SSDs and mount if present
         ConditionPathExists=/dev/disk/by-label/fast
-        Wants=local-fs.target
-        Before=var-apps.mount var-git.mount var-music.mount var-music-touhou.mount
 
         [Mount]
         What=/dev/disk/by-label/fast
         Where=/var/srv/fast
         Type=btrfs
         Options=nofail,subvol=/
+    - name: mnt-fast.automount
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Automount SSDs (on demand)
 
-        [Install]
-        WantedBy=multi-user.target
+        [Automount]
+        Where=/var/srv/fast
+        TimeoutIdleSec=2min
 
     - name: var-music.mount
-      enabled: true
+      enabled: false
       contents: |
         [Unit]
         Description=Mount /var/music from fast:@music
@@ -47,12 +41,21 @@ systemd:
         Where=/var/music
         Type=btrfs
         Options=nofail,subvol=@music
+    - name: var-music.automount
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Automount music (on first access)
+
+        [Automount]
+        Where=/var/music
+        TimeoutIdleSec=2min
 
         [Install]
         WantedBy=multi-user.target
 
     - name: var-music-touhou.mount
-      enabled: true
+      enabled: false
       contents: |
         [Unit]
         Description=Mount /var/music/touhou from fast:@touhou
@@ -64,12 +67,21 @@ systemd:
         Where=/var/music/touhou
         Type=btrfs
         Options=nofail,subvol=@touhou
+    - name: var-music-touhou.automount
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Automount TouHou (on first access)
+
+        [Automount]
+        Where=/var/music/touhou
+        TimeoutIdleSec=2min
 
         [Install]
         WantedBy=multi-user.target
 
     - name: var-apps.mount
-      enabled: true
+      enabled: false
       contents: |
         [Unit]
         Description=Mount /var/apps from fast:@apps
@@ -81,12 +93,21 @@ systemd:
         Where=/var/apps
         Type=btrfs
         Options=nofail,subvol=@apps
+    - name: var-apps.automount
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Automount apps (on first access)
+
+        [Automount]
+        Where=/var/apps
+        TimeoutIdleSec=2min
 
         [Install]
         WantedBy=multi-user.target
 
     - name: var-git.mount
-      enabled: true
+      enabled: false
       contents: |
         [Unit]
         Description=Mount /var/git from fast:@git
@@ -98,6 +119,15 @@ systemd:
         Where=/var/git
         Type=btrfs
         Options=nofail,subvol=@git
+    - name: var-git.automount
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Automount git (on first access)
+
+        [Automount]
+        Where=/var/git
+        TimeoutIdleSec=2min
 
         [Install]
         WantedBy=multi-user.target

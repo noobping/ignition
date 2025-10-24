@@ -14,7 +14,6 @@ StopTimeout=120
 
 [Service]
 Restart=always
-TimeoutStartSec=600
 
 [Install]
 WantedBy=default.target

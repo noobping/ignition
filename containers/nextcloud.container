@@ -13,7 +13,7 @@ Label=io.containers.autoupdate=image
 [Service]
 User=docs
 Restart=always
-TimeoutStartSec=1200
+TimeoutStartSec=900
 
 [Install]
 WantedBy=default.target

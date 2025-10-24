@@ -6,16 +6,34 @@ storage:
     - path: /var/games/minecraft/bedrock
     - path: /var/games/minecraft/java
     - path: /var/music/touhou
-  filesystems:
-    - path: /var/srv/fast
-      device: /dev/disk/by-label/fast
-      format: btrfs
-      wipe_filesystem: false
-      with_mount_unit: true
-      options: ["nofail"]
+  # filesystems:
+  #   - path: /var/srv/fast
+  #     device: /dev/disk/by-label/fast
+  #     format: btrfs
+  #     wipe_filesystem: false
+  #     with_mount_unit: true
+  #     options: ["nofail"]
 
 systemd:
   units:
+    - name: mnt-fast.mount
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Detect ssds and mount if present
+        ConditionPathExists=/dev/disk/by-label/fast
+        Wants=local-fs.target
+        Before=var-apps.mount var-git.mount var-music.mount var-music-touhou.mount
+
+        [Mount]
+        What=/dev/disk/by-label/fast
+        Where=/var/srv/fast
+        Type=btrfs
+        Options=nofail,subvol=/
+
+        [Install]
+        WantedBy=multi-user.target
+
     - name: var-music.mount
       enabled: true
       contents: |

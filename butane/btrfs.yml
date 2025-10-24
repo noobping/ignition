@@ -7,6 +7,7 @@ storage:
       format: btrfs
       wipe_filesystem: false
       with_mount_unit: true
+      options: ["nofail"]
 
 systemd:
   units:
@@ -22,7 +23,7 @@ systemd:
         What=/dev/disk/by-label/fast
         Where=/var/music
         Type=btrfs
-        Options=subvol=@music
+        Options=nofail,subvol=@music
 
         [Install]
         WantedBy=multi-user.target
@@ -39,7 +40,7 @@ systemd:
         What=/dev/disk/by-label/fast
         Where=/var/music/touhou
         Type=btrfs
-        Options=subvol=@touhou
+        Options=nofail,subvol=@touhou
 
         [Install]
         WantedBy=multi-user.target
@@ -56,7 +57,7 @@ systemd:
         What=/dev/disk/by-label/fast
         Where=/var/apps
         Type=btrfs
-        Options=subvol=@apps
+        Options=nofail,subvol=@apps
 
         [Install]
         WantedBy=multi-user.target
@@ -73,7 +74,7 @@ systemd:
         What=/dev/disk/by-label/fast
         Where=/var/git
         Type=btrfs
-        Options=subvol=@git
+        Options=nofail,subvol=@git
 
         [Install]
         WantedBy=multi-user.target

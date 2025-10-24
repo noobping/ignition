@@ -166,7 +166,7 @@ jobs:
       - name: Profiles
         run: |
           set -euo pipefail
-          yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/live.yml > live.bu
+          yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/ssh.yml butane/live.yml > live.bu
           yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/ssh.yml butane/encrypted.yml butane/cockpit.yml > stable.bu
 
       - name: Live ignition
@@ -196,7 +196,7 @@ jobs:
 
   build-pxe:
     needs: generate-ignition
-    if: ${{ github.ref != 'refs/heads/develop' && github.ref != 'refs/heads/development' }}
+    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -377,6 +377,8 @@ jobs:
       contents: read
       id-token: write
       packages: write
+    env:
+      BETA: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master' }}
     strategy:
       fail-fast: false
       matrix:
@@ -414,29 +416,37 @@ jobs:
           fi
           echo "Extra args: $EXTRA"
 
+          SUFFIX=""
+          if [[ "${BETA}" == "true" ]]; then
+            SUFFIX="-beta"
+          fi
+
+          OUTFILE="fedora-coreos-${ARCH}-${PROFILE}${SUFFIX}.iso"
+          echo "Output file: $OUTFILE"
+
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD":/work -w /work "$INSTALLER_IMAGE" \
             iso customize \
               --live-ignition live.ign \
               $EXTRA \
-              -o fedora-coreos-$ARCH-$PROFILE.iso \
+              -o "$OUTFILE" \
               "${ISO}"
 
-          ls -l fedora-coreos-$ARCH-$PROFILE.iso
+          ls -l "$OUTFILE"
 
       - name: Upload ISO artifact
         uses: actions/upload-artifact@v4
         with:
-          name: fedora-coreos-${{ matrix.arch }}-${{ matrix.profile }}.iso
-          path: fedora-coreos-${{ matrix.arch }}-${{ matrix.profile }}.iso
+          name: fedora-coreos-${{ matrix.arch }}-${{ matrix.profile }}${{ env.BETA == 'true' && '-beta' || '' }}.iso
+          path: fedora-coreos-${{ matrix.arch }}-${{ matrix.profile }}${{ env.BETA == 'true' && '-beta' || '' }}.iso
           if-no-files-found: error
           compression-level: 6
           overwrite: true
 
   pages:
     needs: build-iso-fcos
-    if: ${{ github.ref != 'refs/heads/develop' && github.ref != 'refs/heads/development' }}
+    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' }}
     runs-on: ubuntu-latest
     permissions:
       pages: write

@@ -94,7 +94,6 @@ systemd:
         Description=Install software packages via rpm-ostree
         Wants=network-online.target
         After=network-online.target
-        ConditionFirstBoot=yes
 
         [Service]
         Type=oneshot
@@ -132,17 +131,3 @@ systemd:
 
         [Install]
         WantedBy=multi-user.target
-
-    - name: wake-on-alarm.service
-      enabled: true
-      contents: |
-        [Unit]
-        Description=Set wakeup alarm for next boot
-        Before=poweroff.target halt.target reboot.target
-
-        [Service]
-        Type=oneshot
-        ExecStart=/usr/bin/rtcwake -m no -t $(date +%s -d 'tomorrow 10:00')
-
-        [Install]
-        WantedBy=poweroff.target halt.target reboot.target

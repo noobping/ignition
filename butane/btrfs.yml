@@ -1,0 +1,79 @@
+variant: fcos
+version: 1.6.0
+storage:
+  filesystems:
+    - path: /var/srv/fast
+      device: /dev/disk/by-label/fast
+      format: btrfs
+      wipe_filesystem: false
+      with_mount_unit: true
+
+systemd:
+  units:
+    - name: var-music.mount
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Mount /var/music from fast:@music
+        After=mnt-fast.mount
+        Requires=mnt-fast.mount
+
+        [Mount]
+        What=/dev/disk/by-label/fast
+        Where=/var/music
+        Type=btrfs
+        Options=subvol=@music
+
+        [Install]
+        WantedBy=multi-user.target
+
+    - name: var-music-touhou.mount
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Mount /var/music/touhou from fast:@touhou
+        After=mnt-fast.mount
+        Requires=mnt-fast.mount
+
+        [Mount]
+        What=/dev/disk/by-label/fast
+        Where=/var/music/touhou
+        Type=btrfs
+        Options=subvol=@touhou
+
+        [Install]
+        WantedBy=multi-user.target
+
+    - name: var-apps.mount
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Mount /var/apps from fast:@apps
+        After=mnt-fast.mount
+        Requires=mnt-fast.mount
+
+        [Mount]
+        What=/dev/disk/by-label/fast
+        Where=/var/apps
+        Type=btrfs
+        Options=subvol=@apps
+
+        [Install]
+        WantedBy=multi-user.target
+
+    - name: var-git.mount
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Mount /var/git from fast:@git
+        After=mnt-fast.mount
+        Requires=mnt-fast.mount
+
+        [Mount]
+        What=/dev/disk/by-label/fast
+        Where=/var/git
+        Type=btrfs
+        Options=subvol=@git
+
+        [Install]
+        WantedBy=multi-user.target

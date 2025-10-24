@@ -2,189 +2,27 @@ variant: fcos
 version: 1.6.0
 
 storage:
-  filesystems:
-    - path: /var/srv/fast
-      device: /dev/disk/by-label/fast
-      with_mount_unit: true
-      format: btrfs
-      options: ["nofail"]
-  directories:
-    - path: /var/srv/fast
+  files:
+    - path: /usr/local/bin/mount-fast-subvols.sh
       mode: 0755
-    - path: /var/music/touhou
-      user: 
-        name: music
-      groups:
-        name: music
-      mode: 0755
-    - path: /var/books
-      mode: 0755
-      user: 
-        name: music
-      groups:
-        name: music
-    - path: /var/photos
-      mode: 0755
-    - path: /var/videos
-      mode: 0755
-      user: 
-        name: music
-      groups:
-        name: music
-    - path: /var/snapshots
-      mode: 0755
+      contents:
+        local: scripts/mount-fast.sh
+
 systemd:
-    - name: var-music.mount
+  units:
+    - name: mount-fast-subvols.service
       enabled: true
       contents: |
         [Unit]
-        Description=Btrfs Subvolume music
+        Description=Mount Btrfs subvolumes from /dev/disk/by-label/fast
         Wants=local-fs.target
-        DefaultDependencies=no
+        Before=local-fs.target
+        ConditionPathExists=/dev/disk/by-label/fast
 
-        [Mount]
-        What=/dev/disk/by-label/fast
-        Where=/var/music
-        Type=btrfs
-        Options=nofail,subvol=music,x-parent=/dev/md127,x-parent=/dev/md/raid0
-
-        [Install]
-        WantedBy=local-fs.target
-    
-    - name: var-apps.mount
-      enabled: true
-      contents: |
-        [Unit]
-        Description=Btrfs Subvolume apps
-        Wants=local-fs.target
-        DefaultDependencies=no
-
-        [Mount]
-        What=/dev/disk/by-label/fast
-        Where=/var/apps
-        Type=btrfs
-        Options=nofail,subvol=apps,x-parent=/dev/md127,x-parent=/dev/md/raid0
-
-        [Install]
-        WantedBy=local-fs.target
-        
-    - name: var-git.mount
-      enabled: true
-      contents: |
-        [Unit]
-        Description=Btrfs Subvolume git
-        Wants=local-fs.target
-        DefaultDependencies=no
-
-        [Mount]
-        What=/dev/disk/by-label/fast
-        Where=/var/git
-        Type=btrfs
-        Options=nofail,subvol=git,x-parent=/dev/md127,x-parent=/dev/md/raid0
-
-        [Install]
-        WantedBy=local-fs.target
-        
-    - name: var-music-touhou.mount
-      enabled: true
-      contents: |
-        [Unit]
-        Description=Btrfs Subvolume touhou
-        Wants=local-fs.target
-        DefaultDependencies=no
-        # Ensure the parent directory is mounted first
-        RequiresMountsFor=/var/music
-
-        [Mount]
-        What=/dev/disk/by-label/fast
-        Where=/var/music/touhou
-        Type=btrfs
-        Options=nofail,subvol=touhou,x-parent=/dev/md127,x-parent=/dev/md/raid0
-
-        [Install]
-        WantedBy=local-fs.target
-
-    - name: var-books.mount
-      enabled: true
-      contents: |
-        [Unit]
-        Description=Btrfs Subvolume books
-        Wants=local-fs.target
-        DefaultDependencies=no
-
-        [Mount]
-        What=/dev/disk/by-label/fast
-        Where=/var/books
-        Type=btrfs
-        Options=nofail,subvol=books,x-parent=/dev/md127,x-parent=/dev/md/raid0
-
-        [Install]
-        WantedBy=local-fs.target
-        
-    - name: var-docs.mount
-      enabled: true
-      contents: |
-        [Unit]
-        Description=Btrfs Subvolume docs
-        Wants=local-fs.target
-        DefaultDependencies=no
-
-        [Mount]
-        What=/dev/disk/by-label/fast
-        Where=/var/docs
-        Type=btrfs
-        Options=nofail,subvol=docs,x-parent=/dev/md127,x-parent=/dev/md/raid0
-
-        [Install]
-        WantedBy=local-fs.target
-        
-    - name: var-photos.mount
-      enabled: true
-      contents: |
-        [Unit]
-        Description=Btrfs Subvolume photos
-        Wants=local-fs.target
-        DefaultDependencies=no
-
-        [Mount]
-        What=/dev/disk/by-label/fast
-        Where=/var/photos
-        Type=btrfs
-        Options=nofail,subvol=photos,x-parent=/dev/md127,x-parent=/dev/md/raid0
-
-        [Install]
-        WantedBy=local-fs.target
-        
-    - name: var-videos.mount
-      enabled: true
-      contents: |
-        [Unit]
-        Description=Btrfs Subvolume videos
-        Wants=local-fs.target
-        DefaultDependencies=no
-
-        [Mount]
-        What=/dev/disk/by-label/fast
-        Where=/var/videos
-        Type=btrfs
-        Options=nofail,subvol=videos,x-parent=/dev/md127,x-parent=/dev/md/raid0
-
-        [Install]
-        WantedBy=local-fs.target
-        
-    - name: var-snapshots.mount
-      enabled: true
-      contents: |
-        [Unit]
-        Description=Btrfs Subvolume snapshots
-        Wants=local-fs.target
-        DefaultDependencies=no
-
-        [Mount]
-        What=/dev/disk/by-label/fast
-        Where=/var/snapshots
-        Type=btrfs
-        Options=nofail,subvol=snapshots,x-parent=/dev/md127,x-parent=/dev/md/raid0
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/local/bin/mount-fast-subvols.sh
+        RemainAfterExit=yes
 
         [Install]
         WantedBy=local-fs.target

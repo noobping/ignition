@@ -1,60 +1,111 @@
 variant: fcos
 version: 1.6.0
+
 storage:
   directories:
     - path: /var/srv/fast
 
 systemd:
   units:
-    - name: mnt-fast.mount
+    - name: selinux-restorecon@.service
       enabled: false
       contents: |
         [Unit]
-        Description=Detect SSDs and mount if present
-        ConditionPathExists=/dev/disk/by-label/fast
+        Description=Restore SELinux contexts on /%I (derived) after mount
+        After=%i.mount
+        Requires=%i.mount
+
+        [Service]
+        Type=oneshot
+        # instance like "var-music" -> "/var/music"
+        ExecStart=/usr/bin/sh -c 'p="/%I"; p="${p//-//}"; exec /usr/sbin/restorecon -RFv "$p"'
+
+    - name: mnt@.mount
+      enabled: false
+      contents: |
+        [Unit]
+        Description=Mount /var/srv/%i from label %i (on demand via automount)
+        ConditionPathExists=/dev/disk/by-label/%i
 
         [Mount]
-        What=/dev/disk/by-label/fast
-        Where=/var/srv/fast
+        What=/dev/disk/by-label/%i
+        Where=/var/srv/%i
         Type=btrfs
         Options=nofail,subvol=/
-    - name: mnt-fast.automount
-      enabled: true
+
+    - name: mnt@.automount
+      enabled: false
       contents: |
         [Unit]
-        Description=Automount SSDs (on demand)
+        Description=Automount /var/srv/%i
 
         [Automount]
-        Where=/var/srv/fast
+        Where=/var/srv/%i
         TimeoutIdleSec=2min
 
         [Install]
         WantedBy=multi-user.target
 
-    - name: var-music.mount
+    - name: fast@.mount
       enabled: false
       contents: |
         [Unit]
-        Description=Mount /var/music from fast:@music
+        Description=Mount /var/%i from fast:@%i
         ConditionPathExists=/dev/disk/by-label/fast
 
         [Mount]
         What=/dev/disk/by-label/fast
-        Where=/var/music
+        Where=/var/%i
         Type=btrfs
-        Options=nofail,subvol=@music
-    - name: var-music.automount
-      enabled: true
+        Options=nofail,subvol=@%i
+
+    - name: fast@.automount
+      enabled: false
       contents: |
         [Unit]
-        Description=Automount music (on first access)
+        Description=Automount /var/%i
 
         [Automount]
-        Where=/var/music
+        Where=/var/%i
         TimeoutIdleSec=2min
 
         [Install]
         WantedBy=multi-user.target
+
+    - name: fast@music.automount
+      enabled: true
+    - name: selinux-restorecon@var-music.service
+      enabled: true
+
+    - name: fast@apps.automount
+      enabled: true
+    - name: selinux-restorecon@var-apps.service
+      enabled: true
+
+    - name: fast@git.automount
+      enabled: true
+    - name: selinux-restorecon@var-git.service
+      enabled: true
+
+    - name: fast@docs.automount
+      enabled: true
+    - name: selinux-restorecon@var-docs.service
+      enabled: true
+
+    - name: fast@videos.automount
+      enabled: true
+    - name: selinux-restorecon@var-videos.service
+      enabled: true
+
+    - name: fast@photos.automount
+      enabled: true
+    - name: selinux-restorecon@var-photos.service
+      enabled: true
+
+    - name: fast@snapshots.automount
+      enabled: true
+    - name: selinux-restorecon@var-snapshots.service
+      enabled: true
 
     - name: var-music-touhou.mount
       enabled: false
@@ -62,71 +113,22 @@ systemd:
         [Unit]
         Description=Mount /var/music/touhou from fast:@touhou
         ConditionPathExists=/dev/disk/by-label/fast
-
         [Mount]
         What=/dev/disk/by-label/fast
         Where=/var/music/touhou
         Type=btrfs
         Options=nofail,subvol=@touhou
+
     - name: var-music-touhou.automount
       enabled: true
       contents: |
         [Unit]
-        Description=Automount TouHou (on first access)
-
+        Description=Automount /var/music/touhou
         [Automount]
         Where=/var/music/touhou
         TimeoutIdleSec=2min
-
         [Install]
         WantedBy=multi-user.target
 
-    - name: var-apps.mount
-      enabled: false
-      contents: |
-        [Unit]
-        Description=Mount /var/apps from fast:@apps
-        ConditionPathExists=/dev/disk/by-label/fast
-
-        [Mount]
-        What=/dev/disk/by-label/fast
-        Where=/var/apps
-        Type=btrfs
-        Options=nofail,subvol=@apps
-    - name: var-apps.automount
+    - name: selinux-restorecon@var-music-touhou.service
       enabled: true
-      contents: |
-        [Unit]
-        Description=Automount apps (on first access)
-
-        [Automount]
-        Where=/var/apps
-        TimeoutIdleSec=2min
-
-        [Install]
-        WantedBy=multi-user.target
-
-    - name: var-git.mount
-      enabled: false
-      contents: |
-        [Unit]
-        Description=Mount /var/git from fast:@git
-        ConditionPathExists=/dev/disk/by-label/fast
-
-        [Mount]
-        What=/dev/disk/by-label/fast
-        Where=/var/git
-        Type=btrfs
-        Options=nofail,subvol=@git
-    - name: var-git.automount
-      enabled: true
-      contents: |
-        [Unit]
-        Description=Automount git (on first access)
-
-        [Automount]
-        Where=/var/git
-        TimeoutIdleSec=2min
-
-        [Install]
-        WantedBy=multi-user.target

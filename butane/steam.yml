@@ -6,6 +6,7 @@ passwd:
     - name: steam
       uid: 1003
       home_dir: /var/games/steam
+      shell: /usr/bin/nologin
 
 storage:
   directories:

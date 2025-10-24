@@ -6,6 +6,8 @@ passwd:
     - name: minecraft
       uid: 1002
       home_dir: /var/games/minecraft
+      shell: /usr/bin/nologin
+
 storage:
   files:
     - path: /etc/containers/systemd/minecraft.container

@@ -6,6 +6,8 @@ passwd:
     - name: music
       uid: 1004
       home_dir: /var/music
+      shell: /usr/bin/nologin
+
 storage:
   directories:
     - path: /var/music/touhou

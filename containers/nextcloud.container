@@ -11,7 +11,7 @@ PodmanArgs=-p 8080:80 -v /var/apps/nextcloud:/var/www/html:Z
 Label=io.containers.autoupdate=image
 
 [Service]
-User=nobody
+User=docs
 Restart=always
 TimeoutStartSec=900
 

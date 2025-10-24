@@ -15,7 +15,7 @@ AutoUpdate=registry
 ShmSize=4g
 
 [Service]
-User=nobody
+User=minecraft
 Restart=always
 TimeoutStopSec=60
 

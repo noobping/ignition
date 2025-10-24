@@ -1,6 +1,11 @@
 variant: fcos
 version: 1.6.0
 storage:
+  directories:
+    - path: /var/srv/fast
+    - path: /var/games/minecraft/bedrock
+    - path: /var/games/minecraft/java
+    - path: /var/music/touhou
   filesystems:
     - path: /var/srv/fast
       device: /dev/disk/by-label/fast

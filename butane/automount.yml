@@ -1,0 +1,98 @@
+variant: fcos
+version: 1.6.0
+
+systemd:
+  units:
+    - name: selinux-restorecon@.service
+      enabled: false
+      contents: |
+        [Unit]
+        Description=Restore SELinux contexts on /%I (derived) after mount
+        After=%i.mount
+        Requires=%i.mount
+
+        [Service]
+        Type=oneshot
+        # instance like "var-music" -> "/var/music"
+        ExecStart=/usr/bin/sh -c 'p="/%I"; p="${p//-//}"; exec /usr/sbin/restorecon -RFv "$p"'
+
+        [Install]
+        WantedBy=multi-user.target
+
+    - name: mnt@.mount
+      enabled: false
+      contents: |
+        [Unit]
+        Description=Mount %i
+        ConditionPathExists=/dev/disk/by-label/%i
+
+        [Mount]
+        What=/dev/disk/by-label/%i
+        Where=/var/srv/%i
+        Type=btrfs
+        Options=nofail,subvol=/
+
+    - name: mnt@.automount
+      enabled: false
+      contents: |
+        [Unit]
+        Description=Automount %i
+
+        [Automount]
+        Where=/var/srv/%i
+        TimeoutIdleSec=2min
+
+        [Install]
+        WantedBy=multi-user.target
+
+    - name: fast@.mount
+      enabled: false
+      contents: |
+        [Unit]
+        Description=Mount %i from fast:@%i
+        ConditionPathExists=/dev/disk/by-label/fast
+
+        [Mount]
+        What=/dev/disk/by-label/fast
+        Where=/var/%i
+        Type=btrfs
+        Options=nofail,subvol=@%i
+
+    - name: fast@.automount
+      enabled: false
+      contents: |
+        [Unit]
+        Description=Automount %i
+
+        [Automount]
+        Where=/var/%i
+        TimeoutIdleSec=2min
+
+        [Install]
+        WantedBy=multi-user.target
+
+    - name: game@.mount
+      enabled: false
+      contents: |
+        [Unit]
+        Description=Mount %i from fast:@%i
+        ConditionPathExists=/dev/disk/by-label/fast
+
+        [Mount]
+        What=/dev/disk/by-label/fast
+        Where=/var/games/%i
+        Type=btrfs
+        Options=nofail,subvol=@%i
+
+    - name: game@.automount
+      enabled: false
+      contents: |
+        [Unit]
+        Description=Automount %i
+
+        [Automount]
+        Where=/var/games/%i
+        TimeoutIdleSec=2min
+
+        [Install]
+        WantedBy=multi-user.target

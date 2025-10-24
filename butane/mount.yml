@@ -3,7 +3,7 @@ version: 1.6.0
 
 storage:
   files:
-    - path: /var/usrlocal/bin/mount-fast-subvols.sh
+    - path: /usr/local/bin/mount-fast-subvols.sh
       mode: 0755
       contents:
         local: scripts/mount-fast.sh
@@ -21,7 +21,7 @@ systemd:
 
         [Service]
         Type=oneshot
-        ExecStart=/var/usrlocal/bin/mount-fast-subvols.sh
+        ExecStart=/usr/local/bin/mount-fast-subvols.sh
         RemainAfterExit=yes
 
         [Install]

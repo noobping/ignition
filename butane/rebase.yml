@@ -3,12 +3,12 @@ version: 1.6.0
 
 storage:
   directories:
-    - path: /usr/local/bin
+    - path: /var/usrlocal/bin
       mode: 0755
     - path: /etc/skel/.local/share/applications
       mode: 0755
   files:
-    - path: /usr/local/bin/rebase-ostree.sh
+    - path: /var/usrlocal/bin/rebase-ostree.sh
       mode: 0755
       contents:
         local: ./scripts/rebase-ostree.sh
@@ -23,7 +23,7 @@ storage:
           Comment=Rebase this system to Fedora CoreOS
           Name[nl]=Overschakelen naar Fedora CoreOS
           Comment[nl]=Schakel dit systeem over naar Fedora CoreOS
-          Exec=bash -lc 'pkexec /usr/local/bin/rebase-ostree.sh coreos; echo; read -n1 -rsp "Druk op een toets om te sluiten…"' 
+          Exec=bash -lc 'pkexec /var/usrlocal/bin/rebase-ostree.sh coreos; echo; read -n1 -rsp "Druk op een toets om te sluiten…"' 
           Terminal=true
           Icon=system-software-update
           Categories=System;
@@ -40,7 +40,7 @@ storage:
           Comment=Rebase this system to Fedora Silverblue
           Name[nl]=Overschakelen naar Fedora Silverblue
           Comment[nl]=Schakel dit systeem over naar Fedora Silverblue
-          Exec=bash -lc 'pkexec /usr/local/bin/rebase-ostree.sh silverblue; echo; read -n1 -rsp "Druk op een toets om te sluiten…"' 
+          Exec=bash -lc 'pkexec /var/usrlocal/bin/rebase-ostree.sh silverblue; echo; read -n1 -rsp "Druk op een toets om te sluiten…"' 
           Terminal=true
           Icon=org.fedoraproject.Silverblue
           Categories=System;
@@ -57,7 +57,7 @@ storage:
           Comment=Rebase this system to Fedora Kinoite
           Name[nl]=Overschakelen naar Fedora Kinoite
           Comment[nl]=Schakel dit systeem over naar Fedora Kinoite
-          Exec=bash -lc 'pkexec /usr/local/bin/rebase-ostree.sh kinoite; echo; read -n1 -rsp "Druk op een toets om te sluiten…"' 
+          Exec=bash -lc 'pkexec /var/usrlocal/bin/rebase-ostree.sh kinoite; echo; read -n1 -rsp "Druk op een toets om te sluiten…"' 
           Terminal=true
           Icon=org.fedoraproject.Kinoite
           Categories=System;

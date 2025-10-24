@@ -8,7 +8,7 @@ passwd:
 
 storage:
   files:
-    - path: /usr/local/sbin/detect-device.sh
+    - path: /var/usrlocal/sbin/detect-device.sh
       mode: 0755
       contents:
         local: ./scripts/detect-device.sh

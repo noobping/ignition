@@ -3,15 +3,15 @@ version: 1.6.0
 
 storage:
   files:
-    - path: /usr/local/sbin/detect-device.sh
+    - path: /var/usrlocal/sbin/detect-device.sh
       mode: 0755
       contents:
         local: ./scripts/detect-device.sh
-    - path: /usr/local/sbin/todo.sh
+    - path: /var/usrlocal/sbin/todo.sh
       mode: 0755
       contents:
         local: ./scripts/todo.sh
-    - path: /usr/local/sbin/add-mirrors.sh
+    - path: /var/usrlocal/sbin/add-mirrors.sh
       mode: 0755
       contents:
         local: ./scripts/mirrors.sh
@@ -108,7 +108,7 @@ systemd:
 
         [Service]
         Type=oneshot
-        ExecStart=/usr/local/sbin/add-mirrors.sh
+        ExecStart=/var/usrlocal/sbin/add-mirrors.sh
 
         [Install]
         WantedBy=multi-user.target

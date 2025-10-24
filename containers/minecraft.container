@@ -1,0 +1,24 @@
+[Unit]
+Description=Minecraft Java server
+ConditionPathExists=/var/games/minecraft/java
+
+[Container]
+Image=docker.io/itzg/minecraft-server:latest
+Environment=EULA=TRUE
+Environment=TZ=Europe/Amsterdam
+Environment=TYPE=PAPER
+Environment=MEMORY=4G
+Environment=ENABLE_RCON=TRUE
+PublishPort=25565:25565/tcp
+PublishPort=25575:25575/tcp
+Volume=/var/games/minecraft/java:/data:z
+AutoUpdate=registry
+ShmSize=4g
+
+[Service]
+User=minecraft
+Restart=always
+TimeoutStopSec=60
+
+[Install]
+WantedBy=multi-user.target

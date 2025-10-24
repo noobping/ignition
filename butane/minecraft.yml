@@ -1,0 +1,18 @@
+variant: fcos
+version: 1.6.0
+
+passwd:
+  users:
+    - name: minecraft
+      uid: 1002
+      home_dir: /var/games/minecraft
+storage:
+  files:
+    - path: /etc/containers/systemd/minecraft.container
+      mode: 0644
+      contents:
+        local: ./containers/minecraft.container
+    - path: /etc/containers/systemd/bedrock.container
+      mode: 0644
+      contents:
+        local: ./containers/bedrock.container

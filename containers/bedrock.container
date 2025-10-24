@@ -1,0 +1,20 @@
+[Unit]
+Description=Minecraft Bedrock server
+ConditionPathExists=/var/games/minecraft/bedrock
+
+[Container]
+Image=docker.io/itzg/minecraft-bedrock-server:latest
+Environment=EULA=TRUE
+Environment=TZ=Europe/Amsterdam
+PublishPort=19132:19132/udp
+Volume=/var/games/minecraft/bedrock:/data:z
+AutoUpdate=registry
+ShmSize=4g
+
+[Service]
+User=minecraft
+Restart=always
+TimeoutStopSec=60
+
+[Install]
+WantedBy=multi-user.target

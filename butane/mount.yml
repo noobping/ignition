@@ -11,7 +11,7 @@ storage:
 systemd:
   units:
     - name: mount-fast-subvols.service
-      enabled: true
+      enabled: false
       contents: |
         [Unit]
         Description=Mount Btrfs subvolumes from /dev/disk/by-label/fast

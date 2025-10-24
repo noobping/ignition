@@ -4,6 +4,7 @@ version: 1.6.0
 storage:
   directories:
     - path: /var/srv/fast
+    - path: /var/snapshots
 
 systemd:
   units:

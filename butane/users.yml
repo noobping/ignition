@@ -61,6 +61,16 @@ storage:
         name: music
       group:
         name: music
+    - path: /var/videos
+      user:
+        name: music
+      group:
+        name: music
+    - path: /var/photos
+      user:
+        name: music
+      group:
+        name: music
 
     - path: /var/home/nick/.bashrc.d
       mode: 0755

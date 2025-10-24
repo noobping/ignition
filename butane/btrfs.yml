@@ -36,8 +36,7 @@ systemd:
       contents: |
         [Unit]
         Description=Mount /var/music from fast:@music
-        After=mnt-fast.mount
-        Requires=mnt-fast.mount
+        ConditionPathExists=/dev/disk/by-label/fast
 
         [Mount]
         What=/dev/disk/by-label/fast
@@ -62,8 +61,7 @@ systemd:
       contents: |
         [Unit]
         Description=Mount /var/music/touhou from fast:@touhou
-        After=mnt-fast.mount
-        Requires=mnt-fast.mount
+        ConditionPathExists=/dev/disk/by-label/fast
 
         [Mount]
         What=/dev/disk/by-label/fast
@@ -88,8 +86,7 @@ systemd:
       contents: |
         [Unit]
         Description=Mount /var/apps from fast:@apps
-        After=mnt-fast.mount
-        Requires=mnt-fast.mount
+        ConditionPathExists=/dev/disk/by-label/fast
 
         [Mount]
         What=/dev/disk/by-label/fast
@@ -114,8 +111,7 @@ systemd:
       contents: |
         [Unit]
         Description=Mount /var/git from fast:@git
-        After=mnt-fast.mount
-        Requires=mnt-fast.mount
+        ConditionPathExists=/dev/disk/by-label/fast
 
         [Mount]
         What=/dev/disk/by-label/fast

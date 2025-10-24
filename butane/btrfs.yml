@@ -24,7 +24,7 @@ systemd:
       enabled: false
       contents: |
         [Unit]
-        Description=Mount /var/srv/%i from label %i (on demand via automount)
+        Description=Mount %i
         ConditionPathExists=/dev/disk/by-label/%i
 
         [Mount]
@@ -37,7 +37,7 @@ systemd:
       enabled: false
       contents: |
         [Unit]
-        Description=Automount /var/srv/%i
+        Description=Automount %i
 
         [Automount]
         Where=/var/srv/%i
@@ -50,7 +50,7 @@ systemd:
       enabled: false
       contents: |
         [Unit]
-        Description=Mount /var/%i from fast:@%i
+        Description=Mount %i from fast:@%i
         ConditionPathExists=/dev/disk/by-label/fast
 
         [Mount]
@@ -63,7 +63,7 @@ systemd:
       enabled: false
       contents: |
         [Unit]
-        Description=Automount /var/%i
+        Description=Automount %i
 
         [Automount]
         Where=/var/%i
@@ -111,7 +111,7 @@ systemd:
       enabled: false
       contents: |
         [Unit]
-        Description=Mount /var/music/touhou from fast:@touhou
+        Description=Mount touhou music
         ConditionPathExists=/dev/disk/by-label/fast
         [Mount]
         What=/dev/disk/by-label/fast
@@ -123,7 +123,7 @@ systemd:
       enabled: true
       contents: |
         [Unit]
-        Description=Automount /var/music/touhou
+        Description=Automount touhou music
         [Automount]
         Where=/var/music/touhou
         TimeoutIdleSec=2min
@@ -131,4 +131,40 @@ systemd:
         WantedBy=multi-user.target
 
     - name: selinux-restorecon@var-music-touhou.service
+      enabled: true
+
+    - name: game@.mount
+      enabled: false
+      contents: |
+        [Unit]
+        Description=Mount %i from fast:@%i
+        ConditionPathExists=/dev/disk/by-label/fast
+
+        [Mount]
+        What=/dev/disk/by-label/fast
+        Where=/var/games/%i
+        Type=btrfs
+        Options=nofail,subvol=@%i
+
+    - name: game@.automount
+      enabled: false
+      contents: |
+        [Unit]
+        Description=Automount %i
+
+        [Automount]
+        Where=/var/games/%i
+        TimeoutIdleSec=2min
+
+        [Install]
+        WantedBy=multi-user.target
+    
+    - name: game@minecraft.automount
+      enabled: true
+    - name: selinux-restorecon@var-games-minecraft.service
+      enabled: true
+
+    - name: game@steam.automount
+      enabled: true
+    - name: selinux-restorecon@var-games-steam.service
       enabled: true

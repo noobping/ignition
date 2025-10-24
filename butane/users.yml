@@ -10,25 +10,25 @@ passwd:
       home_dir: /var/apps
       shell: /usr/bin/nologin
     - name: steam
-      uid: 1011
+      uid: 1012
       home_dir: /var/games/steam
       shell: /usr/bin/nologin
     - name: minecraft
-      uid: 1011
+      uid: 1013
       home_dir: /var/games/minecraft
       shell: /usr/bin/nologin
     - name: docs
-      uid: 1012
+      uid: 1014
       home_dir: /var/docs
       shell: /usr/bin/nologin
       groups: [apps]
     - name: music
-      uid: 1013
+      uid: 1015
       home_dir: /var/music
       shell: /usr/bin/nologin
       groups: [apps]
     - name: git
-      uid: 1014
+      uid: 1016
       home_dir: /var/git
       shell: /usr/bin/nologin
       groups: [apps]

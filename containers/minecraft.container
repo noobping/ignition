@@ -12,6 +12,7 @@ PublishPort=25565:25565/tcp
 PublishPort=25575:25575/tcp
 Volume=/var/games/minecraft/java:/data:z
 AutoUpdate=registry
+ShmSize=4g
 
 [Service]
 User=minecraft

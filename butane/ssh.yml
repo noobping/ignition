@@ -40,6 +40,10 @@ storage:
       contents:
         inline: |
           nick ALL=(ALL) NOPASSWD:ALL
+    - path: /etc/nftables.conf
+      mode: 0644
+      contents:
+        local: ./configs/nftables.conf
 
 systemd:
   units:

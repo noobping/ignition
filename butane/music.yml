@@ -1,0 +1,35 @@
+variant: fcos
+version: 1.6.0
+
+passwd:
+  users:
+    - name: music
+      uid: 1004
+      home_dir: /var/music
+storage:
+  directories:
+    - path: /var/music/touhou
+      mode: 0755
+      user:
+        name: music
+      group:
+        name: music
+    - path: /var/apps
+      mode: 0755
+    - path: /var/apps/jellyfin
+      mode: 0755
+      user:
+        name: music
+      group:
+        name: music
+    - path: /var/apps/jellyfin/cache
+      mode: 0755
+      user:
+        name: music
+      group:
+        name: music
+  files:
+    - path: /etc/containers/systemd/jellyfin.container
+      mode: 0644
+      contents:
+        local: ./containers/jellyfin.container

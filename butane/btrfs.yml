@@ -28,6 +28,9 @@ systemd:
         Where=/var/srv/fast
         TimeoutIdleSec=2min
 
+        [Install]
+        WantedBy=multi-user.target
+
     - name: var-music.mount
       enabled: false
       contents: |

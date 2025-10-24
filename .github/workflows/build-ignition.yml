@@ -167,7 +167,7 @@ jobs:
         run: |
           set -euo pipefail
           yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/ssh.yml butane/live.yml > live.bu
-          yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/ssh.yml butane/encrypted.yml butane/automount.yml butane/cockpit.yml butane/minecraft.yml > stable.bu
+          yq ea '. as $item ireduce ({}; . *+ $item)' butane/base.yml butane/ssh.yml butane/encrypted.yml butane/automount.yml butane/cockpit.yml butane/minecraft.yml butane/steam.yml > stable.bu
 
       - name: Live ignition
         run: |

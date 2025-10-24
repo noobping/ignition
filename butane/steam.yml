@@ -3,23 +3,24 @@ version: 1.6.0
 
 passwd:
   users:
-    - name: player
-      uid: 1001
+    - name: steam
+      uid: 1003
+      home_dir: /var/games/steam
 
 storage:
   directories:
-    - path: /var/srv/hot/steam/data
+    - path: /var/games/steam/data
       mode: 0755
       user:
-        name: player
+        name: steam
       group:
-        name: player
-    - path: /var/srv/hot/steam/local
+        name: steam
+    - path: /var/games/steam/local
       mode: 0755
       user:
-        name: player
+        name: steam
       group:
-        name: player
+        name: steam
   files:
     - path: /etc/containers/systemd/steam.container
       mode: 0644

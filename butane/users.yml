@@ -3,9 +3,19 @@ version: 1.6.0
 
 passwd:
   users:
+    - name: nobody
+      system: true
     - name: apps
       uid: 1011
       home_dir: /var/apps
+      shell: /usr/bin/nologin
+    - name: steam
+      uid: 1011
+      home_dir: /var/games/steam
+      shell: /usr/bin/nologin
+    - name: minecraft
+      uid: 1011
+      home_dir: /var/games/minecraft
       shell: /usr/bin/nologin
     - name: docs
       uid: 1012

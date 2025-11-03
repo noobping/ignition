@@ -6,6 +6,8 @@ kernel_arguments:
     - crashkernel=512M
     - libata.force=noncq
     - libata.eh_timeout=15
+    - libata.noacpi=1
+    - ahci.mobile_lpm_policy=1
 
 storage:
   files:

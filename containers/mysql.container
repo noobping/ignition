@@ -1,0 +1,20 @@
+[Unit]
+Description=Podman - MySQL service
+After=local-fs.target
+Requires=local-fs.target
+RequiresMountsFor=/var/apps/mysql
+ConditionPathExists=/var/apps/mysql
+
+[Container]
+Image=docker.io/library/mariadb:latest
+AutoUpdate=registry
+EnvironmentFile=/var/apps/nextcloud.env
+PodmanArgs=-p 3306:3306 -v /var/apps/mysql:/var/apps/mysql:Z
+StopTimeout=120
+
+[Service]
+Restart=always
+TimeoutStartSec=180
+
+[Install]
+WantedBy=default.target

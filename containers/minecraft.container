@@ -18,7 +18,7 @@ ShmSize=4g
 [Service]
 User=minecraft
 Restart=always
-TimeoutStopSec=60
+TimeoutStartSec=180
 
 [Install]
 WantedBy=multi-user.target

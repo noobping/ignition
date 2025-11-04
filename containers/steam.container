@@ -23,7 +23,7 @@ PublishPort=27036:27036/tcp
 [Service]
 User=steam
 Restart=always
-TimeoutStartSec=900
+TimeoutStartSec=180
 
 [Install]
 WantedBy=multi-user.target

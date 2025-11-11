@@ -1,0 +1,1 @@
+alias flatpak-builder="flatpak run org.flatpak.Builder"

@@ -450,9 +450,6 @@ jobs:
       contents: read
       packages: read
       actions: read
-    env:
-      VERSION: ${{ needs.compute-version.outputs.version }}
-      RELEASE: ${{ needs.compute-version.outputs.release }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -468,6 +465,8 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.compute-version.outputs.version }}
+          RELEASE: ${{ needs.compute-version.outputs.release }}
         run: |
           set -euo pipefail
           owner_repo="${{ github.repository }}"

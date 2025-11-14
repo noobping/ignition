@@ -496,6 +496,8 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Prepare site files
+        env:
+          VERSION: ${{ needs.compute-version.outputs.version }}
         run: |
           set -euo pipefail
           cp site/* dist/

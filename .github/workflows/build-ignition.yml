@@ -129,15 +129,11 @@ jobs:
           echo "release=$RELEASE" >> "$GITHUB_OUTPUT"
 
   generate-ignition:
-    needs: compute-version
     runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
       packages: write
-    env:
-      VERSION: ${{ needs.compute-version.outputs.version }}
-      RELEASE: ${{ needs.compute-version.outputs.release }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -368,13 +364,17 @@ jobs:
 
   build-iso-fcos:
     name: Build FCOS ISOs
-    needs: generate-ignition
+    needs:
+      - compute-version
+      - generate-ignition
     runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
       packages: write
     env:
+      VERSION: ${{ needs.compute-version.outputs.version }}
+      RELEASE: ${{ needs.compute-version.outputs.release }}
       BETA: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master' }}
     strategy:
       fail-fast: false
@@ -418,7 +418,7 @@ jobs:
             SUFFIX="-beta"
           fi
 
-          OUTFILE="fedora-coreos-${ARCH}-${PROFILE}${SUFFIX}.iso"
+          OUTFILE="fedora-coreos-${VERSION}.${RELEASE}-${PROFILE}${SUFFIX}.${ARCH}.iso"
           echo "Output file: $OUTFILE"
 
           docker run --rm \
@@ -435,8 +435,8 @@ jobs:
       - name: Upload ISO artifact
         uses: actions/upload-artifact@v4
         with:
-          name: fedora-coreos-${{ matrix.arch }}-${{ matrix.profile }}${{ env.BETA == 'true' && '-beta' || '' }}.iso
-          path: fedora-coreos-${{ matrix.arch }}-${{ matrix.profile }}${{ env.BETA == 'true' && '-beta' || '' }}.iso
+          name: fedora-coreos-${VERSION}.${RELEASE}-${{ matrix.profile }}${{ env.BETA == 'true' && '-beta' || '' }}.${{ matrix.arch }}.iso
+          path: fedora-coreos-${VERSION}.${RELEASE}-${{ matrix.profile }}${{ env.BETA == 'true' && '-beta' || '' }}.${{ matrix.arch }}.iso
           if-no-files-found: error
           compression-level: 6
           overwrite: true
@@ -480,9 +480,9 @@ jobs:
           }
 
           # Look up each artifact id
-          AARCH64_STABLE_ID="$(art_id 'fedora-coreos-aarch64-stable.iso')"
-          X86_64_STABLE_ID="$(art_id 'fedora-coreos-x86_64-stable.iso')"
-          X86_64_NAS_ID="$(art_id 'fedora-coreos-x86_64-nas.iso')"
+          AARCH64_STABLE_ID="$(art_id 'fedora-coreos-${VERSION}.${RELEASE}-stable.aarch64.iso')"
+          X86_64_STABLE_ID="$(art_id 'fedora-coreos-${VERSION}.${RELEASE}-stable.X86_64.iso')"
+          X86_64_NAS_ID="$(art_id 'fedora-coreos-${VERSION}.${RELEASE}-nas.X86_64.iso')"
 
           base="https://github.com/$owner_repo/actions/runs/$run_id/artifacts"
           AARCH64_STABLE_URL="$base/$AARCH64_STABLE_ID"

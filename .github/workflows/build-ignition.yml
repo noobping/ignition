@@ -503,6 +503,7 @@ jobs:
           cp site/* dist/
           cp dist/stable.ign dist/ign.json
           cp dist/stable.ign dist/fcos.ign
+          VERSION=${{ env.VERSION }}
           sed -i "s|__VERSION__|$VERSION|g" dist/index.html
 
           # Inject artifact links from the current run

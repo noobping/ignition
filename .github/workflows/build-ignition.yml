@@ -480,8 +480,8 @@ jobs:
 
           # Look up each artifact id
           AARCH64_STABLE_ID="$(art_id 'stable.aarch64.iso')"
-          X86_64_STABLE_ID="$(art_id 'stable.X86_64.iso')"
-          X86_64_NAS_ID="$(art_id 'nas.X86_64.iso')"
+          X86_64_STABLE_ID="$(art_id 'stable.x86_64.iso')"
+          X86_64_NAS_ID="$(art_id 'nas.x86_64.iso')"
 
           base="https://github.com/$owner_repo/actions/runs/$run_id/artifacts"
           AARCH64_STABLE_URL="$base/$AARCH64_STABLE_ID"

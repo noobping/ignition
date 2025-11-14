@@ -317,9 +317,6 @@ jobs:
           name: files
           path: .
 
-      - run: tree
-        continue-on-error: true
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -512,9 +509,6 @@ jobs:
           sed -i "s|__FCOS_AARCH64_STABLE__|${{ steps.artifacts.outputs.aarch64_stable }}|g"   dist/index.html
           sed -i "s|__FCOS_X86_64_STABLE__|${{ steps.artifacts.outputs.x86_64_stable }}|g"     dist/index.html
           sed -i "s|__FCOS_X86_64_NAS__|${{ steps.artifacts.outputs.x86_64_nas }}|g"     dist/index.html
-
-      - run: tree
-        continue-on-error: true
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

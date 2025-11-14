@@ -35,6 +35,22 @@ storage:
         name: nick
       contents:
         local: ./aliases/pass
+    - path: /var/home/nick/.bashrc.d/zola
+      mode: 0755
+      user:
+        name: nick
+      group:
+        name: nick
+      contents:
+        local: ./aliases/zola
+    - path: /var/home/nick/.bashrc.d/flatpak-builder
+      mode: 0755
+      user:
+        name: nick
+      group:
+        name: nick
+      contents:
+        local: ./aliases/flatpak-builder
     - path: /etc/sudoers.d/nick
       mode: 0440
       contents:

@@ -142,17 +142,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Variables
-        run: |
-          sed "s|__VERSION__|$VERSION|g" configs/silverblue.conf > ks.cfg
-          sed -i "s|__RELEASE__|$RELEASE|g" ks.cfg
-
-          arches=(x86_64 aarch64)
-          for arch in "${arches[@]}"; do
-            sed "s|__ARCH__|$arch|g" ks.cfg > "${arch}.cfg"
-          done
-          rm ks.cfg
-
       - name: Dependencies
         run: |
           set -euo pipefail
@@ -200,7 +189,6 @@ jobs:
           name: files
           path: |
             *.ign
-            *.cfg
           if-no-files-found: error
 
   build-pxe:
@@ -465,7 +453,6 @@ jobs:
       actions: read
     env:
       VERSION: ${{ needs.compute-version.outputs.version }}
-      RELEASE: ${{ needs.compute-version.outputs.release }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -516,7 +503,6 @@ jobs:
           cp dist/stable.ign dist/ign.json
           cp dist/stable.ign dist/fcos.ign
           sed -i "s|__VERSION__|$VERSION|g" dist/index.html
-          sed -i "s|__RELEASE__|$RELEASE|g" dist/index.html
 
           # Inject artifact links from the current run
           sed -i "s|__FCOS_AARCH64_STABLE__|${{ steps.artifacts.outputs.aarch64_stable }}|g"   dist/index.html

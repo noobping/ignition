@@ -6,8 +6,6 @@ RUN cp /usr/share/ipxe/ipxe-snponly-x86_64.efi /data/amd.efi
 
 # Ignition file
 COPY *.ign  /data/
-COPY x86_64.cfg /data/x86_64.cfg
-COPY aarch64.cfg /data/aarch64.cfg
 # x86_64
 COPY pxe-x86_64/*-initramfs.x86_64-with-ign.img /data/fcos/initramfs-x86_64.img
 COPY pxe-x86_64/*-kernel.x86_64                 /data/fcos/kernel-x86_64

@@ -475,15 +475,15 @@ jobs:
           # Helper to fetch an artifact ID by its name (exact match)
           art_id() {
             gh api "/repos/$owner_repo/actions/runs/$run_id/artifacts" \
-              -q ".artifacts[] | select(.name == \"$1\") | .id"
+              -q ".artifacts[] | select(.name == \"fedora-coreos-$VERSION.$RELEASE-$1\") | .id"
           }
 
           # Look up each artifact id
           VERSION=${{ env.VERSION }}
           RELEASE=${{ env.RELEASE }}
-          AARCH64_STABLE_ID=$(art_id "fedora-coreos-$VERSION.$RELEASE-stable.aarch64.iso")
-          X86_64_STABLE_ID=$(art_id "fedora-coreos-$VERSION.$RELEASE-stable.X86_64.iso")
-          X86_64_NAS_ID=$(art_id "fedora-coreos-$VERSION.$RELEASE-nas.X86_64.iso")
+          AARCH64_STABLE_ID="$(art_id 'stable.aarch64.iso')"
+          X86_64_STABLE_ID="$(art_id 'stable.X86_64.iso')"
+          X86_64_NAS_ID="$(art_id 'nas.X86_64.iso')"
 
           base="https://github.com/$owner_repo/actions/runs/$run_id/artifacts"
           AARCH64_STABLE_URL="$base/$AARCH64_STABLE_ID"

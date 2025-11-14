@@ -3,7 +3,6 @@ version: 1.6.0
 
 kernel_arguments:
   should_exist:
-    - crashkernel=512M
     - libata.eh_timeout=240
 
 storage:

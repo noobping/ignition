@@ -1,6 +1,10 @@
 variant: fcos
 version: 1.6.0
 
+kernel_arguments:
+  should_exist:
+    - crashkernel=512M
+
 storage:
   files:
     - path: /etc/ssh/sshd_config.d/40-disable-passwords.conf

@@ -442,7 +442,9 @@ jobs:
           overwrite: true
 
   pages:
-    needs: build-iso-fcos
+    needs:
+      - build-iso-fcos
+      - compute-version
     if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' }}
     runs-on: ubuntu-latest
     permissions:

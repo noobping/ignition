@@ -23,7 +23,7 @@ systemd:
       enabled: false
       contents: |
         [Unit]
-        Description=Mount %i
+        Description=Mount %I
         ConditionPathExists=/dev/disk/by-label/%i
 
         [Mount]
@@ -32,11 +32,14 @@ systemd:
         Type=btrfs
         Options=nofail,subvol=/
 
+        [Install]
+        WantedBy=multi-user.target
+
     - name: mnt@.automount
       enabled: false
       contents: |
         [Unit]
-        Description=Automount %i
+        Description=Automount %I
 
         [Automount]
         Where=/var/srv/%i
@@ -49,7 +52,7 @@ systemd:
       enabled: false
       contents: |
         [Unit]
-        Description=Mount %i from fast:@%i
+        Description=Mount %I
         ConditionPathExists=/dev/disk/by-label/fast
 
         [Mount]
@@ -58,11 +61,14 @@ systemd:
         Type=btrfs
         Options=nofail,subvol=@%i
 
+        [Install]
+        WantedBy=multi-user.target
+
     - name: fast@.automount
       enabled: false
       contents: |
         [Unit]
-        Description=Automount %i
+        Description=Automount %I
 
         [Automount]
         Where=/var/%i
@@ -71,27 +77,30 @@ systemd:
         [Install]
         WantedBy=multi-user.target
 
-    - name: game@.mount
+    - name: mass@.mount
       enabled: false
       contents: |
         [Unit]
-        Description=Mount %i from fast:@%i
-        ConditionPathExists=/dev/disk/by-label/fast
+        Description=Mount %I
+        ConditionPathExists=/dev/disk/by-label/mass
 
         [Mount]
-        What=/dev/disk/by-label/fast
-        Where=/var/games/%i
+        What=/dev/disk/by-label/mass
+        Where=/var/%i
         Type=btrfs
         Options=nofail,subvol=@%i
 
-    - name: game@.automount
+        [Install]
+        WantedBy=multi-user.target
+
+    - name: mass@.automount
       enabled: false
       contents: |
         [Unit]
-        Description=Automount %i
+        Description=Automount %I
 
         [Automount]
-        Where=/var/games/%i
+        Where=/var/%i
         TimeoutIdleSec=2min
 
         [Install]

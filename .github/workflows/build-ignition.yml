@@ -479,8 +479,6 @@ jobs:
           }
 
           # Look up each artifact id
-          VERSION=${{ env.VERSION }}
-          RELEASE=${{ env.RELEASE }}
           AARCH64_STABLE_ID="$(art_id 'stable.aarch64.iso')"
           X86_64_STABLE_ID="$(art_id 'stable.X86_64.iso')"
           X86_64_NAS_ID="$(art_id 'nas.X86_64.iso')"
@@ -493,8 +491,8 @@ jobs:
           echo "aarch64_stable=$AARCH64_STABLE_URL"
           echo "x86_64_stable=$X86_64_STABLE_URL"
           echo "x86_64_nas=$X86_64_NAS_URL"
-          echo "version=$VERSION"
-          echo "release=$RELEASE"
+          echo "version=${{ env.VERSION }}"
+          echo "release=${{ env.RELEASE }}"
 
           # Expose as outputs
           {

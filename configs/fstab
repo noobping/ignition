@@ -1,0 +1,9 @@
+UUID=581ce2c0-479a-400f-9d5d-747c95585c44 /var/ssd auto nofail,subvol=/,x-parent=658cdaaa-98af-419b-af14-ec75eb84aed9,x-parent=057119bc:1872c5fd:db036438:b8ec439b 0 0
+UUID=581ce2c0-479a-400f-9d5d-747c95585c44 /var/apps auto nofail,subvol=apps,x-parent=658cdaaa-98af-419b-af14-ec75eb84aed9,x-parent=057119bc:1872c5fd:db036438:b8ec439b 0 0
+UUID=581ce2c0-479a-400f-9d5d-747c95585c44 /var/books auto nofail,subvol=books,x-parent=658cdaaa-98af-419b-af14-ec75eb84aed9,x-parent=057119bc:1872c5fd:db036438:b8ec439b 0 0
+UUID=581ce2c0-479a-400f-9d5d-747c95585c44 /var/docs auto nofail,subvol=docs,x-parent=658cdaaa-98af-419b-af14-ec75eb84aed9,x-parent=057119bc:1872c5fd:db036438:b8ec439b 0 0
+UUID=581ce2c0-479a-400f-9d5d-747c95585c44 /var/git auto nofail,subvol=git,x-parent=658cdaaa-98af-419b-af14-ec75eb84aed9,x-parent=057119bc:1872c5fd:db036438:b8ec439b 0 0
+UUID=581ce2c0-479a-400f-9d5d-747c95585c44 /var/music auto nofail,subvol=music,x-parent=658cdaaa-98af-419b-af14-ec75eb84aed9,x-parent=057119bc:1872c5fd:db036438:b8ec439b 0 0
+UUID=581ce2c0-479a-400f-9d5d-747c95585c44 /var/photos auto nofail,subvol=photos,x-parent=658cdaaa-98af-419b-af14-ec75eb84aed9,x-parent=057119bc:1872c5fd:db036438:b8ec439b 0 0
+UUID=581ce2c0-479a-400f-9d5d-747c95585c44 /var/music/touhou auto nofail,subvol=touhou,x-parent=658cdaaa-98af-419b-af14-ec75eb84aed9,x-parent=057119bc:1872c5fd:db036438:b8ec439b 0 0
+UUID=581ce2c0-479a-400f-9d5d-747c95585c44 /var/videos auto nofail,subvol=videos,x-parent=658cdaaa-98af-419b-af14-ec75eb84aed9,x-parent=057119bc:1872c5fd:db036438:b8ec439b 0 0

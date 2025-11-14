@@ -1,0 +1,25 @@
+variant: fcos
+version: 1.6.0
+
+kernel_arguments:
+  should_exist:
+    - crashkernel=512M
+    # - libata.force=noncq
+    - libata.eh_timeout=240
+    # - libata.noacpi=1
+    # - ahci.mobile_lpm_policy=1
+
+storage:
+  files:
+    - path: /usr/local/sbin/todo.sh
+      mode: 0755
+      contents:
+        local: ./scripts/todo.sh
+    - path: /etc/mdadm.conf
+      mode: 0644
+      contents:
+        local: ./configs/mdadm.conf
+    - path: /etc/fstab
+      mode: 0644
+      contents:
+        local: ./configs/fstab

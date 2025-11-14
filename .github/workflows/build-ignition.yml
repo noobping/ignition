@@ -475,7 +475,7 @@ jobs:
           # Helper to fetch an artifact ID by its name (exact match)
           art_id() {
             gh api "/repos/$owner_repo/actions/runs/$run_id/artifacts" \
-              -q ".artifacts[] | select(.name == \"fedora-coreos-$VERSION.$RELEASE-$1\") | .id"
+              -q ".artifacts[] | select(.name == \"fedora-coreos-${{ env.VERSION }}.${{ env.RELEASE }}-$1\") | .id"
           }
 
           # Look up each artifact id

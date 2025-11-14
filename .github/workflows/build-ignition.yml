@@ -418,7 +418,7 @@ jobs:
             SUFFIX="-beta"
           fi
 
-          OUTFILE="fedora-coreos-${VERSION}.${RELEASE}-${PROFILE}${SUFFIX}.${ARCH}.iso"
+          OUTFILE="fedora-coreos-${{ env.VERSION }}.${{ env.RELEASE }}-${PROFILE}${SUFFIX}.${ARCH}.iso"
           echo "Output file: $OUTFILE"
 
           docker run --rm \
@@ -435,8 +435,8 @@ jobs:
       - name: Upload ISO artifact
         uses: actions/upload-artifact@v4
         with:
-          name: fedora-coreos-${VERSION}.${RELEASE}-${{ matrix.profile }}${{ env.BETA == 'true' && '-beta' || '' }}.${{ matrix.arch }}.iso
-          path: fedora-coreos-${VERSION}.${RELEASE}-${{ matrix.profile }}${{ env.BETA == 'true' && '-beta' || '' }}.${{ matrix.arch }}.iso
+          name: fedora-coreos-${{ env.VERSION }}.${{ env.RELEASE }}-${{ matrix.profile }}${{ env.BETA == 'true' && '-beta' || '' }}.${{ matrix.arch }}.iso
+          path: fedora-coreos-${{ env.VERSION }}.${{ env.RELEASE }}-${{ matrix.profile }}${{ env.BETA == 'true' && '-beta' || '' }}.${{ matrix.arch }}.iso
           if-no-files-found: error
           compression-level: 6
           overwrite: true
@@ -453,6 +453,7 @@ jobs:
       actions: read
     env:
       VERSION: ${{ needs.compute-version.outputs.version }}
+      RELEASE: ${{ needs.compute-version.outputs.release }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -480,9 +481,9 @@ jobs:
           }
 
           # Look up each artifact id
-          AARCH64_STABLE_ID="$(art_id 'fedora-coreos-${VERSION}.${RELEASE}-stable.aarch64.iso')"
-          X86_64_STABLE_ID="$(art_id 'fedora-coreos-${VERSION}.${RELEASE}-stable.X86_64.iso')"
-          X86_64_NAS_ID="$(art_id 'fedora-coreos-${VERSION}.${RELEASE}-nas.X86_64.iso')"
+          AARCH64_STABLE_ID="$(art_id 'fedora-coreos-${{ env.VERSION }}.${{ env.RELEASE }}-stable.aarch64.iso')"
+          X86_64_STABLE_ID="$(art_id 'fedora-coreos-${{ env.VERSION }}.${{ env.RELEASE }}-stable.X86_64.iso')"
+          X86_64_NAS_ID="$(art_id 'fedora-coreos-${{ env.VERSION }}.${{ env.RELEASE }}-nas.X86_64.iso')"
 
           base="https://github.com/$owner_repo/actions/runs/$run_id/artifacts"
           AARCH64_STABLE_URL="$base/$AARCH64_STABLE_ID"

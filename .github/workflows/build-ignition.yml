@@ -481,9 +481,9 @@ jobs:
           # Look up each artifact id
           VERSION=${{ env.VERSION }}
           RELEASE=${{ env.RELEASE }}
-          AARCH64_STABLE_ID="$(art_id 'fedora-coreos-$VERSION.$RELEASE-stable.aarch64.iso')"
-          X86_64_STABLE_ID="$(art_id 'fedora-coreos-$VERSION.$RELEASE-stable.X86_64.iso')"
-          X86_64_NAS_ID="$(art_id 'fedora-coreos-$VERSION.$RELEASE-nas.X86_64.iso')"
+          AARCH64_STABLE_ID=$(art_id "fedora-coreos-$VERSION.$RELEASE-stable.aarch64.iso")
+          X86_64_STABLE_ID=$(art_id "fedora-coreos-$VERSION.$RELEASE-stable.X86_64.iso")
+          X86_64_NAS_ID=$(art_id "fedora-coreos-$VERSION.$RELEASE-nas.X86_64.iso")
 
           base="https://github.com/$owner_repo/actions/runs/$run_id/artifacts"
           AARCH64_STABLE_URL="$base/$AARCH64_STABLE_ID"

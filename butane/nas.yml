@@ -4,6 +4,9 @@ version: 1.6.0
 kernel_arguments:
   should_exist:
     - libata.eh_timeout=240
+    # - libata.force=noncq
+    # - libata.noacpi=1
+    # - ahci.mobile_lpm_policy=1
 
 storage:
   files:

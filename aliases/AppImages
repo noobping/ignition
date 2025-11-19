@@ -1,0 +1,9 @@
+if ! [[ "$PATH" =~ "$HOME/AppImages:" ]]; then
+    PATH="$HOME/AppImages:$PATH"
+fi
+export PATH
+
+alias appimage-builder='podman run --rm -it \
+    -v $(pwd):/project:Z \
+    -w /project \
+    appimagecrafters/appimage-builder:latest appimage-builder --skip-test'
